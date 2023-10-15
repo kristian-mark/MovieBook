@@ -11,7 +11,6 @@ export default function LoginScreen() {
     const signIn = async () => {
         try {
             const response = await signInWithEmailAndPassword(auth, email, password);
-            //logining
         } catch (error) {
             console.log(error)
             if(error.code === 'auth/invalid-email'){
@@ -21,13 +20,13 @@ export default function LoginScreen() {
                 else {
                     alert("Unexpected error. Try again later or contact support.")
                 }
+                throw error;
         }
     }
 
     const signUp = async () => {
         try {
             const response = await createUserWithEmailAndPassword(auth, email, password);
-            console.log(response.user)
             alert('Check your Email!')
         } catch (error) {
             console.log(error.code)
@@ -35,6 +34,7 @@ export default function LoginScreen() {
                 alert('Email already registered.')}
             else {
                 alert('Unexpected error. Try again later or contact support.')}
+                throw error;
         }
     }
 
