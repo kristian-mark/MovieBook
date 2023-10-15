@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, KeyboardAvoidingView, TextInput, TouchableOpaci
 import { FIREBASE_AUTH } from '../../../firebase';
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from 'firebase/auth';
 
-export default function LoginScreen({}) {
+export default function LoginScreen() {
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
     const auth = FIREBASE_AUTH;
@@ -16,8 +16,11 @@ export default function LoginScreen({}) {
             console.log(error)
             if(error.code === 'auth/invalid-email'){
                 alert('Invalid email.')}
-            else {
-                alert('Unexpected error. Log in failed. Try again later.')}
+            else if (error.code === 'auth/invalid-login-credentials'){
+                alert("Invalid login or password")}
+                else {
+                    alert("Unexpected error. Try again later or contact support.")
+                }
         }
     }
 
@@ -31,7 +34,7 @@ export default function LoginScreen({}) {
             if(error.code === 'auth/email-already-in-use'){
                 alert('Email already registered.')}
             else {
-                alert('Unexpected error. Registration failed. Try again later.')}
+                alert('Unexpected error. Try again later or contact support.')}
         }
     }
 
