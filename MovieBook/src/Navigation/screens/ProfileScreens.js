@@ -6,7 +6,7 @@ export default function ProfileScreen({navigation}) {
 
     return (
     <View style={Styles.container}>
-        <Text onPress={() => navigation.navgate('Profile')} style={Styles.text} >Profile Screen</Text>
+        <Text onPress={() => navigation.navigate('Profile')} style={Styles.text} >Profile Screen</Text>
     </View>
     );
 }

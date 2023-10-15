@@ -6,7 +6,7 @@ export default function SearchScreen({navigation}) {
 
     return (
     <View style={Styles.container}>
-        <Text onPress={() => navigation.navgate('Search')} style={Styles.text} >Search Screen</Text>
+        <Text onPress={() => navigation.navigate('Search')} style={Styles.text} >Search Screen</Text>
     </View>
     );
 }

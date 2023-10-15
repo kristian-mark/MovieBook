@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, KeyboardAvoidingView, TextInput, TouchableOpaci
 import { FIREBASE_AUTH } from '../../../firebase';
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from 'firebase/auth';
 
-export default function LoginScreen() {
+export default function LoginScreen({}) {
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
     const auth = FIREBASE_AUTH;

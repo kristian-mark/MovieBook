@@ -6,7 +6,7 @@ export default function FavoritesScreen({navigation}) {
 
     return (
     <View style={Styles.container}>
-        <Text onPress={() => navigation.navgate('Favorites')} style={Styles.text} >Favorites Screen</Text>
+        <Text onPress={() => navigation.navigate('Favorites')} style={Styles.text} >Favorites Screen</Text>
     </View>
     );
 }
