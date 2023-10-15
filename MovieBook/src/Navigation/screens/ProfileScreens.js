@@ -1,14 +1,16 @@
 import React, { useState } from 'react';
-import { View, StyleSheet, Text, ScrollView, SafeAreaView, Image } from 'react-native';
+import { View, StyleSheet, Text, ScrollView, SafeAreaView, Image, TouchableOpacity } from 'react-native';
 import { getAuth, updateProfile } from 'firebase/auth';
+import { FIREBASE_AUTH } from '../../../firebase'
+import IonIcons from 'react-native-vector-icons/Ionicons'
 
 export default function ProfileScreen() {
     const User = getAuth().currentUser
     
-    // const [newName, setNemName] = useState('')
-    // function changeName(){
-    //     updateProfile(User, {displayName: newName})
-    // }
+    const [newName, setNemName] = useState(User.displayName)
+    function ChangeName(){
+        updateProfile(User, {displayName: newName})
+    }
     
     return (
     <SafeAreaView  style={{flex: 1}}>
@@ -17,30 +19,55 @@ export default function ProfileScreen() {
         contentContainerStyle={{justifyContent: 'center', alignItems: 'center'}}
         showsVerticalScrollIndicator={false}
         >
-        {/* <View style={Styles.profileContainer}> */}
+        {/* UID */}
         <Text style={Styles.userUid}>UID: {User.uid ? User.uid : 'undefined'}</Text>
             <View style={Styles.imgContainer}>
-                {/* UID */}
                 <Image style={Styles.userImg} source={User.photoURL != null ? User.photoURL : require('../../assets/no-profile-picture.png')}/>
                     <View style={Styles.textContainer}>
                         {/* Name */}
                         <View style={Styles.userNameContainer}>
-                            <Text style={Styles.prefix}>Name:</Text>
-                            <Text style={Styles.userName}>{User.displayName ? User.displayName : 'no name'}</Text>
+                            <Text style={Styles.desctirtion}>Name:</Text>
+                            <Text style={Styles.userInput}>{User.displayName ? User.displayName : 'no name'}</Text>
                         </View>
                         {/* Phone */}
                         <View style={Styles.userPhoneContainer}>
-                            <Text style={Styles.prefix}>Phone number:</Text>
-                            <Text style={Styles.userPhone}>{User.phoneNumber ? User.phoneNumber : 'no phone'}</Text>
+                            <Text style={Styles.desctirtion}>Phone number:</Text>
+                            <Text style={Styles.userInput}>{User.phoneNumber ? User.phoneNumber : 'no phone'}</Text>
                         </View>
                         {/* Email */}
                         <View style={Styles.userMailContainer}>
-                            <Text style={Styles.prefix}>Email:</Text>
-                            <Text style={Styles.userEmail}>{User.email}</Text>
+                            <Text style={Styles.desctirtion}>Email:</Text>
+                            <Text style={Styles.userInput}>{User.email}</Text>
                         </View>
                     </View>
             </View>
-        {/* </View> */}
+
+            {/* Settings View */}
+            <View style={Styles.settingsWrap}>
+                {/* Chenge name */}
+                <TouchableOpacity onPress={() => {ChangeName}} style={Styles.buttonContent}>
+                        <Text style={Styles.settingsButtonsText}>Change name</Text>
+                        <IonIcons name='arrow-forward' size={20} color={'black'} /> 
+                </TouchableOpacity>
+
+                {/* Chenge phone */}
+                <TouchableOpacity onPress={() => {}} style={Styles.buttonContent}>
+                        <Text style={Styles.settingsButtonsText}>Change phone</Text>
+                        <IonIcons name='arrow-forward' size={20} color={'black'} /> 
+                </TouchableOpacity>
+
+                {/* Chenge profile picture */}
+                <TouchableOpacity onPress={() => {}} style={Styles.buttonContent}>
+                        <Text style={Styles.settingsButtonsText}>Change profile picture</Text>
+                        <IonIcons name='arrow-forward' size={20} color={'black'} /> 
+                </TouchableOpacity>
+
+                {/* Log out */}
+                <TouchableOpacity onPress={() => {FIREBASE_AUTH.signOut()}} style={Styles.buttonContent}>
+                        <Text style={Styles.logOutButton}>Log Out</Text>
+                        <IonIcons name='arrow-forward' size={20} color={'black'} /> 
+                </TouchableOpacity>
+            </View>
 
         </ScrollView>
     </SafeAreaView>
@@ -58,17 +85,19 @@ profileContainer: {
 
 userUid:{
     color: '#bababa',
-    // marginVertical: 10,
 },
 
 imgContainer:{
+    height: 130,
     width: '100%',
     flexDirection: 'row',
-    alignItems: 'stretch',
-    backgroundColor: '#d4cfcf',
+    alignItems: 'center',
+    justifyContent: 'flex-start',
+    backgroundColor: '#C9D9C3',
     borderRadius: 25,
     marginTop: 10,
     marginBottom: 10,
+    elevation: 5,
 },
 
 textContainer: {
@@ -80,43 +109,61 @@ textContainer: {
 
 userImg: {
     margin: 10,
-    height: 120,
-    width: 120,
+    height: 110,
+    width: 110,
     borderRadius: 75,
 },
 
-//Profile User name container
+//
 userNameContainer:{
     height: '30%',
     width: '100%',
 },
-userName:{
-    marginLeft: 20,
-    fontSize: 16,
-},
-
-//Profile User phone container
 userPhoneContainer:{
     height: '30%',
     width: '100%',
 },
-userPhone:{
-    marginLeft: 20,
-    fontSize: 16,
-},
-
-//Profile User mail container
 userMailContainer:{
     height: '30%',
     width: '100%',
 },
-userEmail:{
-    marginLeft: 20,
+userInput:{
     fontSize: 16,
+    fontWeight: '500',
+    color: '#383330',
+    paddingLeft: 20,
 },
 
-prefix:{
-    fontWeight: 'bold'
+desctirtion:{
+    fontWeight: 'bold',
+},
+
+settingsWrap:{
+    borderRadius: 15,
+    // marginTop: 30,
+    flexDirection: 'column',
+    width: '100%',
+},
+
+settingsButtonsText:{
+    fontWeight: '600',
+    fontSize: 16,
+    color:'#383330',
+},
+
+buttonContent:{
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingRight: 10,
+    padding: 13,
+},
+
+logOutButton:{
+    fontWeight: '600',
+    fontSize: 16,
+    color:'#383330',
+    color: '#f05d5d'
 },
 
 })

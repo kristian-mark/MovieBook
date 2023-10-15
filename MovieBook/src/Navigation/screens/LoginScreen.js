@@ -10,7 +10,7 @@ export default function LoginScreen() {
 
     const signIn = async () => {
         try {
-            const response = await signInWithEmailAndPassword(auth, email, password);
+            await signInWithEmailAndPassword(auth, email, password);
         } catch (error) {
             console.log(error)
             if(error.code === 'auth/invalid-email'){
@@ -26,7 +26,7 @@ export default function LoginScreen() {
 
     const signUp = async () => {
         try {
-            const response = await createUserWithEmailAndPassword(auth, email, password);
+            await createUserWithEmailAndPassword(auth, email, password);
             alert('Check your Email!')
         } catch (error) {
             console.log(error.code)

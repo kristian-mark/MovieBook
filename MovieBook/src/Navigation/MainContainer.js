@@ -21,7 +21,7 @@ export default function MainContainer(){
             <Tab.Navigator
             initialRouteName={searchName} 
             screenOptions={({route}) => ({
-                tabBarActiveTintColor: 'tomato',
+                tabBarActiveTintColor: '#864622',
                 tabBarInactiveTintColor: 'grey',
                 tabBarLabelStyle: {height: 20},
                 tabBarStyle: {padding: 10, height:60},
