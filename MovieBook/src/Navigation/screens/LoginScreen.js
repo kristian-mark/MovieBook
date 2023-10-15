@@ -1,14 +1,38 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, KeyboardAvoidingView, TextInput, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, KeyboardAvoidingView, TextInput, TouchableOpacity, ActivityIndicator, Button } from 'react-native';
 import { FIREBASE_AUTH } from '../../../firebase';
+import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from 'firebase/auth';
 
 export default function LoginScreen() {
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
     const auth = FIREBASE_AUTH;
 
-    const handleSignUp = () => {
-        auth
+    const signIn = async () => {
+        try {
+            const response = await signInWithEmailAndPassword(auth, email, password);
+            //logining
+        } catch (error) {
+            console.log(error)
+            if(error.code === 'auth/invalid-email'){
+                alert('Invalid email.')}
+            else {
+                alert('Unexpected error. Log in failed. Try again later.')}
+        }
+    }
+
+    const signUp = async () => {
+        try {
+            const response = await createUserWithEmailAndPassword(auth, email, password);
+            console.log(response.user)
+            alert('Check your Email!')
+        } catch (error) {
+            console.log(error.code)
+            if(error.code === 'auth/email-already-in-use'){
+                alert('Email already registered.')}
+            else {
+                alert('Unexpected error. Registration failed. Try again later.')}
+        }
     }
 
   return (
@@ -20,27 +44,27 @@ export default function LoginScreen() {
                 <TextInput 
                     placeholder='Email'
                     value={email}
-                    onChangeText={text => setEmail(text)}
+                    onChangeText={(text) => setEmail(text)}
                     style={Styles.input}
                 />
-                                <TextInput 
+                <TextInput 
                     placeholder='Password'
                     value={password}
-                    onChangeText={text => setPassword(text)}
+                    onChangeText={(text) => setPassword(text)}
                     style={Styles.input}
-                    secureTextEntry
+                    secureTextEntry={true}
                 />
             </View>
 
             <View style={Styles.buttonContainer}>
                 <TouchableOpacity 
-                    onPress={() =>{}}
+                    onPress={signIn}
                     style={Styles.button}
                 >
                     <Text style={Styles.buttonText}>Login</Text>
                 </TouchableOpacity>
                 <TouchableOpacity 
-                    onPress={() =>{}}
+                    onPress={signUp}
                     style={[Styles.button, Styles.buttonOutline]}
                 >
                     <Text style={Styles.buttonOutlineText}>Register</Text>
