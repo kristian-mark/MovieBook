@@ -7,11 +7,13 @@ import IonIcons from 'react-native-vector-icons/Ionicons'
 import SearchScreen from "./screens/SearchScreen"
 import FavoritesScreen from "./screens/FavoriteScreen";
 import ProfileScreen from "./screens/ProfileScreens";
+import EditProfileScreen from "./screens/EditProfileScreen";
 
 // Screen names
 const searchName = 'Search'
 const favoritesName = 'Favorites'
 const profileName = 'Profile'
+const editProfileName = 'Edit profile'
 
 const Tab = createBottomTabNavigator();
 
@@ -42,9 +44,10 @@ export default function MainContainer(){
                 }
             })}>
 
-                <Tab.Screen name={favoritesName} component={FavoritesScreen} />
-                <Tab.Screen name={searchName} component={SearchScreen} />
-                <Tab.Screen name={profileName} component={ProfileScreen} />
+                <Tab.Screen name={favoritesName} component={FavoritesScreen} options={{headerTitleAlign: 'center'}}/>
+                <Tab.Screen name={searchName} component={SearchScreen} options={{headerTitleAlign: 'center'}}/>
+                <Tab.Screen name={profileName} component={ProfileScreen} options={{headerTitleAlign: 'center'}}/>
+                <Tab.Screen name={editProfileName} component={EditProfileScreen} options={{headerTitleAlign: 'center'}}/>
 
             </Tab.Navigator>
         </NavigationContainer>
