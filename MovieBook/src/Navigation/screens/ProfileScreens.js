@@ -7,10 +7,9 @@ import IonIcons from 'react-native-vector-icons/Ionicons'
 export default function ProfileScreen() {
     const User = getAuth().currentUser
     
-    const [newName, setNemName] = useState(User.displayName)
-    function ChangeName(){
-        updateProfile(User, {displayName: newName})
-    }
+    const [name, setName] = useState(User.displayName)
+        updateProfile(User, {displayName: 'lodka'})
+
     
     return (
     <SafeAreaView  style={{flex: 1}}>
@@ -45,7 +44,7 @@ export default function ProfileScreen() {
             {/* Settings View */}
             <View style={Styles.settingsWrap}>
                 {/* Chenge name */}
-                <TouchableOpacity onPress={() => {ChangeName}} style={Styles.buttonContent}>
+                <TouchableOpacity onPress={() =>{}} style={Styles.buttonContent}>
                         <Text style={Styles.settingsButtonsText}>Change name</Text>
                         <IonIcons name='arrow-forward' size={20} color={'black'} /> 
                 </TouchableOpacity>

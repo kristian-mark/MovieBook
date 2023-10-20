@@ -13,12 +13,12 @@ const searchName = 'Search'
 const favoritesName = 'Favorites'
 const profileName = 'Profile'
 
-const Tab = createBottomTabNavigator();
+const Bot = createBottomTabNavigator();
 
 export default function MainContainer(){
     return(
         <NavigationContainer>
-            <Tab.Navigator
+            <Bot.Navigator
             initialRouteName={searchName} 
             screenOptions={({route}) => ({
                 tabBarActiveTintColor: '#864622',
@@ -42,11 +42,11 @@ export default function MainContainer(){
                 }
             })}>
 
-                <Tab.Screen name={favoritesName} component={FavoritesScreen} options={{headerTitleAlign: 'center'}}/>
-                <Tab.Screen name={searchName} component={SearchScreen} options={{headerTitleAlign: 'center'}}/>
-                <Tab.Screen name={profileName} component={ProfileScreen} options={{headerTitleAlign: 'center'}}/>
+                <Bot.Screen name={favoritesName} component={FavoritesScreen} options={{headerTitleAlign: 'center'}}/>
+                <Bot.Screen name={searchName} component={SearchScreen} options={{headerTitleAlign: 'center'}}/>
+                <Bot.Screen name={profileName} component={ProfileScreen} options={{headerTitleAlign: 'center'}}/>
 
-            </Tab.Navigator>
+            </Bot.Navigator>
         </NavigationContainer>
     )
 }

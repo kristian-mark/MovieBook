@@ -4,6 +4,7 @@ import { onAuthStateChanged } from 'firebase/auth'
 import { FIREBASE_AUTH } from './firebase'
 import MainContainer from './src/Navigation/MainContainer'
 import LoginScreen from './src/Navigation/screens/LoginScreen'
+import EditProfile from './src/Navigation/screens/EditProfileScreen'
 
 function App(){
   const [user, setUser] = useState(null)
@@ -23,6 +24,10 @@ function App(){
       <MainContainer />
     )
   }
+
+  // return(
+  //   <EditProfile />
+  // )
 }
 
 export default App;
