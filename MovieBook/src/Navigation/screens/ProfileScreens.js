@@ -1,23 +1,18 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { View, StyleSheet, Text, ScrollView, SafeAreaView, Image, TouchableOpacity } from 'react-native';
 import { getAuth, updateProfile } from 'firebase/auth';
 import { FIREBASE_AUTH } from '../../../firebase'
 import IonIcons from 'react-native-vector-icons/Ionicons'
-import ProfileNavigation from '../ProfileNavigation';
 
 export default function ProfileScreen({ navigation }) {
-    const User = getAuth().currentUser
+    const User = getAuth().currentUser;
     
-    const [name, setName] = useState(User.displayName)
-        updateProfile(User, {displayName: 'lodka'})
-
-    
-    return (
+return (
     <SafeAreaView  style={{flex: 1}}>
         <ScrollView
-        style={Styles.container}
-        contentContainerStyle={{justifyContent: 'center', alignItems: 'center'}}
-        showsVerticalScrollIndicator={false}
+            style={Styles.container}
+            contentContainerStyle={{justifyContent: 'center', alignItems: 'center'}}
+            showsVerticalScrollIndicator={false}
         >
         {/* UID */}
         <Text style={Styles.userUid}>UID: {User.uid ? User.uid : 'undefined'}</Text>
@@ -44,23 +39,23 @@ export default function ProfileScreen({ navigation }) {
 
             {/* Settings View */}
             <View style={Styles.settingsWrap}>
-                {/* Chenge name */}
+                {/* Edit profile */}
                 <TouchableOpacity onPress={() =>{navigation.navigate('Edit Profile')}} style={Styles.buttonContent}>
                         <Text style={Styles.settingsButtonsText}>Edit profile</Text>
                         <IonIcons name='arrow-forward' size={20} color={'black'} /> 
                 </TouchableOpacity>
 
-                {/* Chenge phone
+                {/* Chenge profile picture */}
                 <TouchableOpacity onPress={() => {}} style={Styles.buttonContent}>
-                        <Text style={Styles.settingsButtonsText}>Change phone</Text>
+                        <Text style={Styles.settingsButtonsText}>Contact support </Text>
                         <IonIcons name='arrow-forward' size={20} color={'black'} /> 
                 </TouchableOpacity>
 
-                Chenge profile picture
+                {/* Chenge phone */}
                 <TouchableOpacity onPress={() => {}} style={Styles.buttonContent}>
-                        <Text style={Styles.settingsButtonsText}>Change profile picture</Text>
+                        <Text style={Styles.settingsButtonsText}>Donate</Text>
                         <IonIcons name='arrow-forward' size={20} color={'black'} /> 
-                </TouchableOpacity> */}
+                </TouchableOpacity>
 
                 {/* Log out */}
                 <TouchableOpacity onPress={() => {FIREBASE_AUTH.signOut()}} style={Styles.buttonContent}>
@@ -78,9 +73,6 @@ const Styles = StyleSheet.create({
 container: {
         flex: 1,
         padding: 10,
-},
-profileContainer: {
-    width: '100%',
 },
 
 userUid:{

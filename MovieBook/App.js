@@ -24,10 +24,6 @@ function App(){
       <MainContainer />
     )
   }
-
-  // return(
-  //   <EditProfile />
-  // )
 }
 
 export default App;

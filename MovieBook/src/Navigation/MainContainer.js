@@ -1,26 +1,29 @@
 import * as React from "react";
-import { NavigationContainer } from '@react-navigation/native';
-import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 
+// Icons
 import IonIcons from 'react-native-vector-icons/Ionicons'
 
-// Screens
-import SearchScreen from "./screens/SearchScreen"
-import FavoritesScreen from "./screens/FavoriteScreen";
-import ProfileScreen from "./screens/ProfileScreens";
-import EditProfileScreen from "./screens/EditProfileScreen";
+// Navigation imports
+import { NavigationContainer } from '@react-navigation/native';
+import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 
+// Screens
+import FavoritesScreen from "./screens/FavoriteScreen";
+import SearchScreen from "./screens/SearchScreen"
+import ProfileScreen from "./screens/ProfileScreens";
+import EditProfileScreen from "./screens/EditProfileScreen";
+
 // Screen names
-const searchName = 'Search'
 const favoritesName = 'Favorites'
+const searchName = 'Search'
 const profileName = 'Profile'
 const editName = 'Edit Profile'
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator()
 
-
+// BottomTabNavigation(you can change here only: icons, parameters, name under icon)
 function MainContainer(){
     return(
         <Tab.Navigator
@@ -47,7 +50,6 @@ function MainContainer(){
                 }
             })}
             >
-
                 <Tab.Screen name={favoritesName} component={FavoritesScreen} options={{headerTitleAlign: 'center'}}/>
                 <Tab.Screen name={searchName} component={SearchScreen} options={{headerTitleAlign: 'center'}}/>
                 <Tab.Screen name={profileName} component={ProfileScreen} options={{headerTitleAlign: 'center'}}/>
@@ -55,6 +57,7 @@ function MainContainer(){
     )
 }
 
+// StackNavigation where you can add StackScreens above BottomTabNavigation (like editProfile screen)
 export default function EditProfileFunc() {
     return (
         <NavigationContainer>
@@ -67,7 +70,9 @@ export default function EditProfileFunc() {
                 <Stack.Screen
                     name={editName}
                     component={EditProfileScreen}
-                    options={{headerTitleAlign: 'center'}}
+                    options={{
+                        headerTitleAlign: 'center'
+                    }}
                 />
             </Stack.Navigator>
         </NavigationContainer>
