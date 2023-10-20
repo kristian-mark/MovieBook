@@ -3,8 +3,9 @@ import { View, StyleSheet, Text, ScrollView, SafeAreaView, Image, TouchableOpaci
 import { getAuth, updateProfile } from 'firebase/auth';
 import { FIREBASE_AUTH } from '../../../firebase'
 import IonIcons from 'react-native-vector-icons/Ionicons'
+import ProfileNavigation from '../ProfileNavigation';
 
-export default function ProfileScreen() {
+export default function ProfileScreen({ navigation }) {
     const User = getAuth().currentUser
     
     const [name, setName] = useState(User.displayName)
@@ -44,22 +45,22 @@ export default function ProfileScreen() {
             {/* Settings View */}
             <View style={Styles.settingsWrap}>
                 {/* Chenge name */}
-                <TouchableOpacity onPress={() =>{}} style={Styles.buttonContent}>
-                        <Text style={Styles.settingsButtonsText}>Change name</Text>
+                <TouchableOpacity onPress={() =>{navigation.navigate('Edit Profile')}} style={Styles.buttonContent}>
+                        <Text style={Styles.settingsButtonsText}>Edit profile</Text>
                         <IonIcons name='arrow-forward' size={20} color={'black'} /> 
                 </TouchableOpacity>
 
-                {/* Chenge phone */}
+                {/* Chenge phone
                 <TouchableOpacity onPress={() => {}} style={Styles.buttonContent}>
                         <Text style={Styles.settingsButtonsText}>Change phone</Text>
                         <IonIcons name='arrow-forward' size={20} color={'black'} /> 
                 </TouchableOpacity>
 
-                {/* Chenge profile picture */}
+                Chenge profile picture
                 <TouchableOpacity onPress={() => {}} style={Styles.buttonContent}>
                         <Text style={Styles.settingsButtonsText}>Change profile picture</Text>
                         <IonIcons name='arrow-forward' size={20} color={'black'} /> 
-                </TouchableOpacity>
+                </TouchableOpacity> */}
 
                 {/* Log out */}
                 <TouchableOpacity onPress={() => {FIREBASE_AUTH.signOut()}} style={Styles.buttonContent}>
