@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, StyleSheet, Text, ScrollView, SafeAreaView, Image, TouchableOpacity } from 'react-native';
-import { getAuth, updateProfile } from 'firebase/auth';
+import { getAuth } from 'firebase/auth';
 import { FIREBASE_AUTH } from '../../../firebase'
 import IonIcons from 'react-native-vector-icons/Ionicons'
 
