@@ -1,10 +1,15 @@
 import React, { useRef } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, ImageBackground, TextInput } from 'react-native';
+
+// Firebase imports
 import { getAuth, updateProfile } from 'firebase/auth';
+
+// Icons imports
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons'
 import FontAwesome from 'react-native-vector-icons/FontAwesome'
 import Feather from 'react-native-vector-icons/Feather'
 
+// BottomSheet imports
 import { GestureHandlerRootView } from 'react-native-gesture-handler'
 import "react-native-gesture-handler";
 import { BottomSheetModal, BottomSheetModalProvider} from '@gorhom/bottom-sheet'
@@ -17,25 +22,15 @@ const snapPoints = ['58%']
 
 function handlePresentModal(){
   bottomSheetModalRef.current?.present();
-
+}
+function handleCloseModal(){
+  bottomSheetModalRef.current?.close();
 }
   return (
     <GestureHandlerRootView style={Styles.container}>
-      <BottomSheetModalProvider>
-        <BottomSheetModal
-          ref={bottomSheetModalRef}
-          imdex={0}
-          snapPoints={snapPoints}
-          backg
-        >
-          <View>
-            <Text>Hello</Text>
-          </View>
-        </BottomSheetModal>
-      </BottomSheetModalProvider>
       <View style={{margin: 20}}>
         <View style={{alignItems: 'center'}}>
-          <TouchableOpacity omPress={() => {}}>
+          <TouchableOpacity onPress={handlePresentModal}>
             <View style={{
               height: 100,
               width: 100,
@@ -147,11 +142,40 @@ function handlePresentModal(){
         </View>
         <TouchableOpacity
           style={Styles.commandButton}
-          onPress={handlePresentModal}
+          onPress={() => {}}
         >
           <Text style={Styles.panelButtonTitle}>Submit</Text>
         </TouchableOpacity>
       </View>
+
+      
+            {/* BottomSheet */}
+      <BottomSheetModalProvider>
+        <BottomSheetModal
+          ref={bottomSheetModalRef}
+          imdex={0}
+          snapPoints={snapPoints}
+          enablePanDownToClose
+          style={{flex: 1, borderWidth:1, borderRadius: 15, borderColor: 'grey'}}
+        >
+          <View style={Styles.panel}>
+            <Text style={Styles.panelTitle}>Upload Photo</Text>
+            <Text style={Styles.panelSubtitle}>Choose Your Profile Picture</Text>
+          </View>
+          <View style={{alignItems: 'center'}}>
+            <TouchableOpacity style={Styles.panelButton}>
+              <Text style={Styles.panelButtonTitle}>Take Photo</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={Styles.panelButton}>
+              <Text style={Styles.panelButtonTitle}>Choose From Library</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={Styles.panelButton} onPress={handleCloseModal}>
+              <Text style={Styles.panelButtonTitle}>Cancel</Text>
+            </TouchableOpacity>
+          </View>
+
+        </BottomSheetModal>
+      </BottomSheetModalProvider>
     </GestureHandlerRootView>
     
   );
@@ -169,6 +193,7 @@ const Styles = StyleSheet.create({
     marginTop: 10,
   },
   panel: {
+    alignItems: 'center',
     padding: 20,
     backgroundColor: '#FFFFFF',
     paddingTop: 20,
@@ -190,9 +215,6 @@ const Styles = StyleSheet.create({
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
   },
-  panelHeader: {
-    alignItems: 'center',
-  },
   panelHandle: {
     width: 40,
     height: 8,
@@ -211,16 +233,18 @@ const Styles = StyleSheet.create({
     marginBottom: 10,
   },
   panelButton: {
+    width: '80%',
     padding: 13,
-    borderRadius: 10,
+    borderRadius: 15,
     backgroundColor: '#FF6347',
     alignItems: 'center',
-    marginVertical: 7,
+    marginBottom: 20,
   },
   panelButtonTitle: {
     fontSize: 17,
     fontWeight: 'bold',
     color: 'white',
+    width: '',
   },
   action: {
     flexDirection: 'row',
