@@ -1,15 +1,38 @@
-import React from 'react';
+import React, { useRef } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, ImageBackground, TextInput } from 'react-native';
 import { getAuth, updateProfile } from 'firebase/auth';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons'
 import FontAwesome from 'react-native-vector-icons/FontAwesome'
 import Feather from 'react-native-vector-icons/Feather'
 
+import { GestureHandlerRootView } from 'react-native-gesture-handler'
+import "react-native-gesture-handler";
+import { BottomSheetModal, BottomSheetModalProvider} from '@gorhom/bottom-sheet'
 
 export default function EditProfileScreen() {
 const User = getAuth().currentUser;
+
+const bottomSheetModalRef = useRef(null)
+const snapPoints = ['58%']
+
+function handlePresentModal(){
+  bottomSheetModalRef.current?.present();
+
+}
   return (
-    <View style={Styles.container}>
+    <GestureHandlerRootView style={Styles.container}>
+      <BottomSheetModalProvider>
+        <BottomSheetModal
+          ref={bottomSheetModalRef}
+          imdex={0}
+          snapPoints={snapPoints}
+          backg
+        >
+          <View>
+            <Text>Hello</Text>
+          </View>
+        </BottomSheetModal>
+      </BottomSheetModalProvider>
       <View style={{margin: 20}}>
         <View style={{alignItems: 'center'}}>
           <TouchableOpacity omPress={() => {}}>
@@ -124,12 +147,13 @@ const User = getAuth().currentUser;
         </View>
         <TouchableOpacity
           style={Styles.commandButton}
-          onPress={() => {}}
+          onPress={handlePresentModal}
         >
           <Text style={Styles.panelButtonTitle}>Submit</Text>
         </TouchableOpacity>
       </View>
-    </View>
+    </GestureHandlerRootView>
+    
   );
 }
 
