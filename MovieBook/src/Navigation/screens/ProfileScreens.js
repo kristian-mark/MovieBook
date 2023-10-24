@@ -52,7 +52,7 @@ return (
                 </TouchableOpacity>
 
                 {/* Chenge phone */}
-                <TouchableOpacity onPress={() => {}} style={Styles.buttonContent}>
+                <TouchableOpacity onPress={() => {console.log(User)}} style={Styles.buttonContent}>
                         <Text style={Styles.settingsButtonsText}>Donate</Text>
                         <IonIcons name='arrow-forward' size={20} color={'black'} /> 
                 </TouchableOpacity>

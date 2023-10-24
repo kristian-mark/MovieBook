@@ -1,8 +1,11 @@
-import React, { useRef } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, ImageBackground, TextInput } from 'react-native';
 
 // Firebase imports
 import { getAuth, updateProfile } from 'firebase/auth';
+
+// Image Picker import
+import * as ImagePicker from 'expo-image-picker'
 
 // Icons imports
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons'
@@ -14,10 +17,72 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler'
 import "react-native-gesture-handler";
 import { BottomSheetModal, BottomSheetModalProvider} from '@gorhom/bottom-sheet'
 
+
+// Main export default
 export default function EditProfileScreen() {
 const User = getAuth().currentUser;
 
 const bottomSheetModalRef = useRef(null)
+const [hasGalleryPermission, setHasGalleryPermission] = useState(null)
+const [hasCameraPermission, setHasCameraPermission] = useState(null)
+const [image, setImage] = useState(require('../../assets/no-profile-picture.png'))
+
+// Instantly ask permission to photos and camera
+useEffect(() =>{
+  (async () => {
+    const galleryStatus = await ImagePicker.requestMediaLibraryPermissionsAsync()
+    const cameraStatus = await ImagePicker.getCameraPermissionsAsync()
+
+    setHasGalleryPermission(galleryStatus.status === 'granted')
+    setHasCameraPermission(cameraStatus.status === 'granted')
+  })()
+}, [])
+
+const pickImageFromLibrary = async () =>{
+  let result = await ImagePicker.launchImageLibraryAsync({
+    mediaTypes: ImagePicker.MediaTypeOptions.Images,
+    allowsEditing: true,
+    aspect: [1,1],
+    quality: 1
+  })
+
+  console.log(result)
+  if(!result.canceled){
+    console.log(result.assets[0].uri)
+    setImage(result.assets[0].uri)
+  }
+  handleCloseModal();
+}
+
+const takePhotoFromCamera = async () =>{
+  let result = await ImagePicker.launchCameraAsync({
+    mediaTypes: ImagePicker.MediaTypeOptions.Images,
+    allowsEditing: true,
+    aspect: [1,1],
+    quality: 1,
+  })
+
+  console.log(result)
+  if(!result.canceled){
+    console.log(result.assets[0].uri)
+    setImage(result.assets[0].uri)
+    updateProfile(User, {photoURL: `${image}`})
+  }
+  handleCloseModal();
+}
+
+if(hasGalleryPermission === false){
+  ImagePicker.requestMediaLibraryPermissionsAsync()
+
+  setHasGalleryPermission(galleryStatus.status === 'granted')
+}
+if(hasCameraPermission === false){
+  ImagePicker.getCameraPermissionsAsync()
+
+  setHasCameraPermission(cameraStatus.status === 'granted')
+}
+
+
 const snapPoints = ['58%']
 
 function handlePresentModal(){
@@ -40,7 +105,7 @@ function handleCloseModal(){
             }}>
               {/* ProfileImage */}
               <ImageBackground
-                source={User.photoURL != null ? User.photoURL : require('../../assets/no-profile-picture.png')}
+                source={User.photoURL != null ? User.photoURL : image}
                 style={{height: 100, width: 100}}
                 imageStyle={{borderRadius: 15}}
               >
@@ -148,7 +213,7 @@ function handleCloseModal(){
         </TouchableOpacity>
       </View>
 
-      
+
             {/* BottomSheet */}
       <BottomSheetModalProvider>
         <BottomSheetModal
@@ -163,10 +228,10 @@ function handleCloseModal(){
             <Text style={Styles.panelSubtitle}>Choose Your Profile Picture</Text>
           </View>
           <View style={{alignItems: 'center'}}>
-            <TouchableOpacity style={Styles.panelButton}>
+            <TouchableOpacity style={Styles.panelButton} onPress={takePhotoFromCamera}>
               <Text style={Styles.panelButtonTitle}>Take Photo</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={Styles.panelButton}>
+            <TouchableOpacity style={Styles.panelButton} onPress={pickImageFromLibrary}>
               <Text style={Styles.panelButtonTitle}>Choose From Library</Text>
             </TouchableOpacity>
             <TouchableOpacity style={Styles.panelButton} onPress={handleCloseModal}>
