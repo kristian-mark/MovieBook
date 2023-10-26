@@ -3,6 +3,8 @@ import { View, Text, StyleSheet, TouchableOpacity, ImageBackground, TextInput } 
 
 // Firebase imports
 import { getAuth, updateProfile } from 'firebase/auth';
+import { ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage'
+import { addDoc, collection, onSnapshot, doc, setDoc } from 'firebase/firestore'
 
 // Image Picker import
 import * as ImagePicker from 'expo-image-picker'
@@ -16,6 +18,7 @@ import Feather from 'react-native-vector-icons/Feather'
 import { GestureHandlerRootView } from 'react-native-gesture-handler'
 import "react-native-gesture-handler";
 import { BottomSheetModal, BottomSheetModalProvider} from '@gorhom/bottom-sheet'
+import { FIREBASE_DB, storage } from '../../../firebase';
 
 
 // Main export default
@@ -25,7 +28,8 @@ const User = getAuth().currentUser;
 const bottomSheetModalRef = useRef(null)
 const [hasGalleryPermission, setHasGalleryPermission] = useState(null)
 const [hasCameraPermission, setHasCameraPermission] = useState(null)
-const [image, setImage] = useState(require('../../assets/no-profile-picture.png'))
+const [image, setImage] = useState(User.photoURL)
+const [progress, setProgress] = useState(0);
 
 // Instantly ask permission to photos and camera
 useEffect(() =>{
@@ -38,6 +42,67 @@ useEffect(() =>{
   })()
 }, [])
 
+async function uploadImage(uri, fileType) {
+  const response = await fetch(uri);
+  const blob = await response.blob();
+  // Storage place
+  const storageRef = ref(storage, `Users/${User.uid}/ProfilePicture`);
+  const uploadTask = uploadBytesResumable(storageRef, blob)
+
+  // Listen for events
+  uploadTask.on('state_changed', 
+  (snapshot) => {
+    const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+    // You can use progress if you want something like progressBar:
+    // setProgress(progress.toFixed())
+    // console.log('Upload is ' + progress + '% done')
+  },
+  (error) => {
+    console.log('Error: ' + error)
+  },
+  () => {
+    getDownloadURL(uploadTask.snapshot.ref).then(async (downloadURL) =>{
+      // Save record
+
+      // console.log('File available at ', downloadURL);
+      // setImage(downloadURL)
+      await saveRecord(fileType, downloadURL, new Date().toISOString())
+      updateProfile(User, {photoURL: downloadURL})
+    })
+  }
+  )
+}
+
+// Saving to storage
+async function saveRecord(fileType, url, createdAt){
+  try {
+    const docRef = doc(FIREBASE_DB, 'Users', User.uid)
+    const result = await setDoc(docRef, {
+      createdAt,
+      userID: User.uid,
+      fileType,
+      url,
+    }, { merge: true})
+
+    console.log('Document saved correctly', docRef)
+  } catch(error){
+    console.log(error)
+  }
+}
+
+// Permissions
+if(hasGalleryPermission === false){
+  ImagePicker.requestMediaLibraryPermissionsAsync()
+  
+  setHasGalleryPermission(galleryStatus.status === 'granted')
+}
+if(hasCameraPermission === false){
+  ImagePicker.getCameraPermissionsAsync()
+  
+  setHasCameraPermission(cameraStatus.status === 'granted')
+}
+
+// Photo/Image picker
 const pickImageFromLibrary = async () =>{
   let result = await ImagePicker.launchImageLibraryAsync({
     mediaTypes: ImagePicker.MediaTypeOptions.Images,
@@ -51,6 +116,8 @@ const pickImageFromLibrary = async () =>{
     console.log(result.assets[0].uri)
     setImage(result.assets[0].uri)
   }
+  await uploadImage(result.assets[0].uri, 'image');
+  await saveRecord('image', )
   handleCloseModal();
 }
 
@@ -66,25 +133,14 @@ const takePhotoFromCamera = async () =>{
   if(!result.canceled){
     console.log(result.assets[0].uri)
     setImage(result.assets[0].uri)
-    updateProfile(User, {photoURL: `${image}`})
+    updateProfile(User, {photoURL: image})
   }
+  await uploadImage(result.assets[0].uri, 'image');
   handleCloseModal();
 }
 
-if(hasGalleryPermission === false){
-  ImagePicker.requestMediaLibraryPermissionsAsync()
-
-  setHasGalleryPermission(galleryStatus.status === 'granted')
-}
-if(hasCameraPermission === false){
-  ImagePicker.getCameraPermissionsAsync()
-
-  setHasCameraPermission(cameraStatus.status === 'granted')
-}
-
-
+// BottomSheet
 const snapPoints = ['58%']
-
 function handlePresentModal(){
   bottomSheetModalRef.current?.present();
 }
@@ -269,24 +325,6 @@ const Styles = StyleSheet.create({
     // shadowRadius: 5,
     // shadowOpacity: 0.4,
   },
-  header: {
-    backgroundColor: '#FFFFFF',
-    shadowColor: '#333333',
-    shadowOffset: {width: -1, height: -3},
-    shadowRadius: 2,
-    shadowOpacity: 0.4,
-    // elevation: 5,
-    paddingTop: 20,
-    borderTopLeftRadius: 20,
-    borderTopRightRadius: 20,
-  },
-  panelHandle: {
-    width: 40,
-    height: 8,
-    borderRadius: 4,
-    backgroundColor: '#00000040',
-    marginBottom: 10,
-  },
   panelTitle: {
     fontSize: 27,
     height: 35,
@@ -320,13 +358,6 @@ const Styles = StyleSheet.create({
     paddingBottom: 5,
     alignItems: 'center',
     justifyContent: 'center'
-  },
-  actionError: {
-    flexDirection: 'row',
-    marginTop: 10,
-    borderBottomWidth: 1,
-    borderBottomColor: '#FF0000',
-    paddingBottom: 5,
   },
   textInput: {
     flex: 1,

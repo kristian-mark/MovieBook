@@ -45,13 +45,13 @@ return (
                         <IonIcons name='arrow-forward' size={20} color={'black'} /> 
                 </TouchableOpacity>
 
-                {/* Chenge profile picture */}
+                {/* Contact support */}
                 <TouchableOpacity onPress={() => {}} style={Styles.buttonContent}>
                         <Text style={Styles.settingsButtonsText}>Contact support </Text>
                         <IonIcons name='arrow-forward' size={20} color={'black'} /> 
                 </TouchableOpacity>
 
-                {/* Chenge phone */}
+                {/* Donate */}
                 <TouchableOpacity onPress={() => {console.log(User)}} style={Styles.buttonContent}>
                         <Text style={Styles.settingsButtonsText}>Donate</Text>
                         <IonIcons name='arrow-forward' size={20} color={'black'} /> 
