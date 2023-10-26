@@ -4,7 +4,7 @@ import { View, Text, StyleSheet, TouchableOpacity, ImageBackground, TextInput } 
 // Firebase imports
 import { getAuth, updateProfile } from 'firebase/auth';
 import { ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage'
-import { addDoc, collection, onSnapshot, doc, setDoc } from 'firebase/firestore'
+import { collection, onSnapshot, doc, setDoc } from 'firebase/firestore'
 
 // Image Picker import
 import * as ImagePicker from 'expo-image-picker'
@@ -15,11 +15,10 @@ import FontAwesome from 'react-native-vector-icons/FontAwesome'
 import Feather from 'react-native-vector-icons/Feather'
 
 // BottomSheet imports
-import { GestureHandlerRootView } from 'react-native-gesture-handler'
 import "react-native-gesture-handler";
+import { GestureHandlerRootView } from 'react-native-gesture-handler'
 import { BottomSheetModal, BottomSheetModalProvider} from '@gorhom/bottom-sheet'
 import { FIREBASE_DB, storage } from '../../../firebase';
-
 
 // Main export default
 export default function EditProfileScreen() {
@@ -29,7 +28,7 @@ const bottomSheetModalRef = useRef(null)
 const [hasGalleryPermission, setHasGalleryPermission] = useState(null)
 const [hasCameraPermission, setHasCameraPermission] = useState(null)
 const [image, setImage] = useState(User.photoURL)
-const [progress, setProgress] = useState(0);
+// const [progress, setProgress] = useState(0);
 
 // Instantly ask permission to photos and camera
 useEffect(() =>{
@@ -42,6 +41,19 @@ useEffect(() =>{
   })()
 }, [])
 
+// Permissions
+if(hasGalleryPermission === false){
+  ImagePicker.requestMediaLibraryPermissionsAsync()
+  
+  setHasGalleryPermission(galleryStatus.status === 'granted')
+}
+if(hasCameraPermission === false){
+  ImagePicker.getCameraPermissionsAsync()
+  
+  setHasCameraPermission(cameraStatus.status === 'granted')
+}
+
+// Upload Image to firestore
 async function uploadImage(uri, fileType) {
   const response = await fetch(uri);
   const blob = await response.blob();
@@ -55,7 +67,7 @@ async function uploadImage(uri, fileType) {
     const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
     // You can use progress if you want something like progressBar:
     // setProgress(progress.toFixed())
-    // console.log('Upload is ' + progress + '% done')
+    console.log('Upload is ' + progress + '% done')
   },
   (error) => {
     console.log('Error: ' + error)
@@ -79,7 +91,7 @@ async function saveRecord(fileType, url, createdAt){
     const docRef = doc(FIREBASE_DB, 'Users', User.uid)
     const result = await setDoc(docRef, {
       createdAt,
-      userID: User.uid,
+      user_ID: User.uid,
       fileType,
       url,
     }, { merge: true})
@@ -90,20 +102,10 @@ async function saveRecord(fileType, url, createdAt){
   }
 }
 
-// Permissions
-if(hasGalleryPermission === false){
-  ImagePicker.requestMediaLibraryPermissionsAsync()
-  
-  setHasGalleryPermission(galleryStatus.status === 'granted')
-}
-if(hasCameraPermission === false){
-  ImagePicker.getCameraPermissionsAsync()
-  
-  setHasCameraPermission(cameraStatus.status === 'granted')
-}
 
 // Photo/Image picker
 const pickImageFromLibrary = async () =>{
+  try {
   let result = await ImagePicker.launchImageLibraryAsync({
     mediaTypes: ImagePicker.MediaTypeOptions.Images,
     allowsEditing: true,
@@ -111,17 +113,24 @@ const pickImageFromLibrary = async () =>{
     quality: 1
   })
 
-  console.log(result)
   if(!result.canceled){
     console.log(result.assets[0].uri)
     setImage(result.assets[0].uri)
+    updateProfile(User, {photoURL: image})
+  } else {
+    handleCloseModal()
   }
   await uploadImage(result.assets[0].uri, 'image');
   await saveRecord('image', )
   handleCloseModal();
+} catch (error) {
+  console.log('Canceled by user: ' + error)
+  handleCloseModal()
+}
 }
 
 const takePhotoFromCamera = async () =>{
+try {
   let result = await ImagePicker.launchCameraAsync({
     mediaTypes: ImagePicker.MediaTypeOptions.Images,
     allowsEditing: true,
@@ -129,14 +138,18 @@ const takePhotoFromCamera = async () =>{
     quality: 1,
   })
 
-  console.log(result)
   if(!result.canceled){
     console.log(result.assets[0].uri)
     setImage(result.assets[0].uri)
     updateProfile(User, {photoURL: image})
+  } else {
   }
   await uploadImage(result.assets[0].uri, 'image');
   handleCloseModal();
+} catch (error) {
+  console.log('Canceled by user: ' + error)
+  handleCloseModal()
+}
 }
 
 // BottomSheet
@@ -147,6 +160,14 @@ function handlePresentModal(){
 function handleCloseModal(){
   bottomSheetModalRef.current?.close();
 }
+
+function saveChanges() {
+updateProfile(User, {
+  // displayName: '',
+  // photoURL: '',
+})
+}
+
   return (
     <GestureHandlerRootView style={Styles.container}>
       <View style={{margin: 20}}>
@@ -161,7 +182,7 @@ function handleCloseModal(){
             }}>
               {/* ProfileImage */}
               <ImageBackground
-                source={User.photoURL != null ? User.photoURL : image}
+                source={{uri: User.photoURL != null ? User.photoURL : image}}
                 style={{height: 100, width: 100}}
                 imageStyle={{borderRadius: 15}}
               >
@@ -263,14 +284,12 @@ function handleCloseModal(){
         </View>
         <TouchableOpacity
           style={Styles.commandButton}
-          onPress={() => {}}
+          onPress={saveChanges}
         >
           <Text style={Styles.panelButtonTitle}>Submit</Text>
         </TouchableOpacity>
       </View>
-
-
-            {/* BottomSheet */}
+        {/* BottomSheet */}
       <BottomSheetModalProvider>
         <BottomSheetModal
           ref={bottomSheetModalRef}
