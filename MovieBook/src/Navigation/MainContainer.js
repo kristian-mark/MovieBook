@@ -13,17 +13,19 @@ import FavoritesScreen from "./screens/FavoriteScreen";
 import SearchScreen from "./screens/SearchScreen"
 import ProfileScreen from "./screens/ProfileScreens";
 import EditProfileScreen from "./screens/EditProfileScreen";
+import MovieScreen from "./screens/MovieScreen";
 
 // Screen names
 const favoritesName = 'Favorites'
 const searchName = 'Search'
 const profileName = 'Profile'
 const editName = 'Edit Profile'
+const filmName = 'Movie'
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator()
 
-// BottomTabNavigation(you can change here only: icons, parameters, name under icon)
+// BottomTabNavigation(you can change here only: icons, parameters, under icon name)
 function MainContainer(){
     return(
         <Tab.Navigator
@@ -51,7 +53,7 @@ function MainContainer(){
             })}
             >
                 <Tab.Screen name={favoritesName} component={FavoritesScreen} options={{headerTitleAlign: 'center'}}/>
-                <Tab.Screen name={searchName} component={SearchScreen} options={{headerTitleAlign: 'center'}}/>
+                <Tab.Screen name={searchName} component={SearchScreen} options={{headerTitleAlign: 'center', headerShown: false}}/>
                 <Tab.Screen name={profileName} component={ProfileScreen} options={{headerTitleAlign: 'center'}}/>
             </Tab.Navigator>
     )
@@ -72,6 +74,13 @@ export default function EditProfileFunc() {
                     component={EditProfileScreen}
                     options={{
                         headerTitleAlign: 'center'
+                    }}
+                />
+                <Stack.Screen
+                    name={filmName}
+                    component={MovieScreen}
+                    options={{
+                        headerShown: false
                     }}
                 />
             </Stack.Navigator>

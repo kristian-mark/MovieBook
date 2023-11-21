@@ -92,8 +92,12 @@ async function saveRecord(fileType, url, createdAt){
     const result = await setDoc(docRef, {
       createdAt,
       user_ID: User.uid,
+      fname: '',
+      lname: '',
+      email: User.email,
       fileType,
       url,
+      films: [],
     }, { merge: true})
 
     console.log('Document saved correctly', docRef)
