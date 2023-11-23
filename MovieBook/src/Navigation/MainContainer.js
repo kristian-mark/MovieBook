@@ -19,7 +19,7 @@ import MovieScreen from "./screens/MovieScreen";
 const favoritesName = 'Favorites'
 const searchName = 'Search'
 const profileName = 'Profile'
-const editName = 'Edit Profile'
+const editProfile = 'Edit Profile'
 const filmName = 'Movie'
 
 const Tab = createBottomTabNavigator();
@@ -70,7 +70,7 @@ export default function EditProfileFunc() {
                     options={{headerShown: false}}
                 />
                 <Stack.Screen
-                    name={editName}
+                    name={editProfile}
                     component={EditProfileScreen}
                     options={{
                         headerTitleAlign: 'center'

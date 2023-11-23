@@ -20,7 +20,6 @@ export const fetchMovies = async (search) => {
   if (!search) {
     const response = await axios.get(`${URL}movie/popular?api_key=${API_KEY}`);
     return [...response.data.results];
-    console.log('suc')
   } else {
     console.log('in else');
     const response = await axios.get(
@@ -35,20 +34,22 @@ export const fetchMovies = async (search) => {
  * fetchCredits take one parameter "id" which will be used for 
  * fetching cast and crew of the movie.
  * it returns the name of the director and the list of crew and 
- * cast which we will use later in this article
+ * cast
 */
+
 export const fetchCredits = async (id) => {
   const response = await axios.get(
     `${URL}movie/${id}/credits?api_key=${API_KEY}`
   );
-  console.log(response.data.crew);
-
+  // console.log(response.data.crew);
   /**
    * here we will search the name of director  
-   */
-  const director = response.data.crew.find(
-    (dir) => dir.known_for_department === 'Directing'
-  );
-  const credits = response.data;
-  return { director: director, credits: credits };
+  */
+ const director = response.data.crew.find(
+   (dir) => dir.known_for_department === 'Directing'
+   );
+   const credits = response.data;
+   const dirId = director.id;
+
+  return { director: director, credits: credits, id: dirId };
 };

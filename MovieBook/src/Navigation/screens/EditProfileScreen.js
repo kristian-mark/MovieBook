@@ -3,8 +3,9 @@ import { View, Text, StyleSheet, TouchableOpacity, ImageBackground, TextInput } 
 
 // Firebase imports
 import { getAuth, updateProfile } from 'firebase/auth';
+import { FIREBASE_DB, storage } from '../../../firebase';
 import { ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage'
-import { collection, onSnapshot, doc, setDoc } from 'firebase/firestore'
+import { doc, setDoc } from 'firebase/firestore'
 
 // Image Picker import
 import * as ImagePicker from 'expo-image-picker'
@@ -18,7 +19,6 @@ import Feather from 'react-native-vector-icons/Feather'
 import "react-native-gesture-handler";
 import { GestureHandlerRootView } from 'react-native-gesture-handler'
 import { BottomSheetModal, BottomSheetModalProvider} from '@gorhom/bottom-sheet'
-import { FIREBASE_DB, storage } from '../../../firebase';
 
 // Main export default
 export default function EditProfileScreen() {
@@ -28,6 +28,7 @@ const bottomSheetModalRef = useRef(null)
 const [hasGalleryPermission, setHasGalleryPermission] = useState(null)
 const [hasCameraPermission, setHasCameraPermission] = useState(null)
 const [image, setImage] = useState(User.photoURL)
+
 // const [progress, setProgress] = useState(0);
 
 // Instantly ask permission to photos and camera
@@ -100,7 +101,7 @@ async function saveRecord(fileType, url, createdAt){
       films: [],
     }, { merge: true})
 
-    console.log('Document saved correctly', docRef)
+    console.log('Document saved correctly')
   } catch(error){
     console.log(error)
   }

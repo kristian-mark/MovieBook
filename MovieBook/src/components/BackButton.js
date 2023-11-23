@@ -9,8 +9,8 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 
 export default BackButton = ({ navigation }) => {
   return (
-    <TouchableOpacity style={styles.backBtn} onPress={() => navigation.navigate('Search')}>
-      <Ionicons name="md-arrow-back" size={20} color="white" />
+    <TouchableOpacity style={styles.backBtn} onPress={() => navigation.pop()}>
+      <Ionicons name="md-arrow-back" size={25} color="white" />
     </TouchableOpacity>
   );
 };
@@ -18,12 +18,12 @@ export default BackButton = ({ navigation }) => {
 const styles = StyleSheet.create({
     backBtn: {
         position: 'absolute',
-        left: 5,
-        top: 5,
+        left: 15,
+        // top: 5,
         zIndex: 100,
         width: 30,
         height: 30,
-        backgroundColor: 'rgba(21,21,21,0.5)',
+        // backgroundColor: 'rgba(21,21,21,0.5)',
         borderRadius: 15,
         justifyContent: 'center',
         alignItems: 'center',
