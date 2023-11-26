@@ -20,12 +20,6 @@ const User = getAuth().currentUser;
  *and vote_average.
  */
 const InfoCard = ({ movie, director, favorite }) => {
-  try {
-    const docRef = doc(FIREBASE_DB, 'Users', User.uid)
-  } catch (error) {
-    console.log(error)
-    console.log(User.uid)
-  }
   const [favoriteColor, setFavoriteColor] = useState(favorite === true ? favorite = 'gold' : favorite = 'white')
 
   async function saveToFavorite(){
@@ -34,11 +28,13 @@ const InfoCard = ({ movie, director, favorite }) => {
       const result = await setDoc(docRef, {
         films: [movie],
       }, { merge: true})
+
       setFavoriteColor('gold')
       alert('suc')
     } catch (error) {
       console.log(error)
       console.log(User.uid)
+
     }
   }
 

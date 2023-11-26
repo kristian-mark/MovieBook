@@ -72,17 +72,18 @@ export default function MovieScreen({ navigation, route }) {
   
     try {
       // Получаем данные о пользователе из Firestore
-      const userDocSnapshot = await getDoc(docRef);
+      const userDocs = await getDoc(docRef);
   
-      if (userDocSnapshot.exists()) {
+      if (userDocs.exists()) {
         // Если документ существует, извлекаем информацию о фильмах пользователя
-        const userData = userDocSnapshot.data();
+        const userData = userDocs.data();
         // console.log('User data: ', userData)
         
         const films = userData.films;
         // console.log('Films: ', films)
   
         films.find((film) => {
+          console.log(film)
           film.id === movie
         });
         setIsFavorite(true)
