@@ -1,27 +1,25 @@
+/* components/Loading.js */
 import React, { useEffect, useState } from 'react';
 import { Text, View, ActivityIndicator } from 'react-native';
-import IonIcon from 'react-native-vector-icons/Ionicons';
-import { useNavigation } from '@react-navigation/native';
+
+/**
+ * This Component will show a circular loading 
+ * indicator in the center of the screen while the servises.js 
+ * functions are fetching the data from TMDB.
+*/
 
 const Loading = () => {
-  const [timeOnPage, setTimeOnPage] = useState(0);
-  const navigation = useNavigation();
-
   return (
-    <View style={{ flex: 1, justifyContent: 'center' }}>
+    <View
+      style={{
+        // flex: 1,
+        justifyContent: 'center',
+        // backgroundColor: 'rgb(21,21,21)',
+      }}>
       <ActivityIndicator size="small" color="#0000ff" />
       <Text style={{ color: 'black', alignSelf: 'center' }}>
-        loading too long? Maybe we don't have this film yet ...
+        loading too long? setup api keys in config/const.js ...
       </Text>
-      <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center' }}>
-        <IonIcon
-          onPress={() => navigation.navigate('Search')}
-          name="arrow-back"
-          size={25}
-          style={{ color: 'black' }}
-        />
-        <Text style={{ color: 'black', marginLeft: 5 }}>Go back</Text>
-      </View>
     </View>
   );
 };

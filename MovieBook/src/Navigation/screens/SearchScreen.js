@@ -10,14 +10,20 @@ import {
     TouchableOpacity,
 } from 'react-native';
 import { Card } from 'react-native-paper';
+
 // Components
 import Loading from '../../components/Loading'
+
 // Expo
 import axios from 'axios';
 import Constants from 'expo-constants'
+
 // Icons
 import EvilIcons from 'react-native-vector-icons/EvilIcons'
+
 import { fetchMovies } from '../../TMDB.js/services';
+
+const screen = Dimensions.get('screen')
 
 export default function SearchScreen({navigation}) {
 
@@ -112,7 +118,6 @@ export default function SearchScreen({navigation}) {
                 }}
               />
             </View>
-            
           </View>
         </View>
       );
