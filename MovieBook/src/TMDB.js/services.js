@@ -5,6 +5,10 @@ import axios from 'axios';
  * */
 import { URL, API_KEY } from './const';
 
+import { getAuth } from 'firebase/auth';
+import { FIREBASE_DB } from '../../firebase';
+import { collection, doc, getDoc } from 'firebase/firestore';
+import { useState } from 'react';
 /**
  * fetchMovies takes one parameter, "search".
  * "search" is a search term which we will get from the TextInput 
@@ -14,14 +18,14 @@ import { URL, API_KEY } from './const';
  * and if the search term is not empty, we will fetch the data of
  * searched movie.
 */
-
+const [filmy, setFilmy] =useState()
 export const fetchMovies = async (search) => {
-  console.log('fetch movies', search);
+  console.log('fetch movies:', search);
   if (!search) {
     const response = await axios.get(`${URL}movie/popular?api_key=${API_KEY}`);
     return [...response.data.results];
   } else {
-    console.log('in else');
+    console.log('services.js/in else');
     const response = await axios.get(
       `${URL}search/movie?api_key=${API_KEY}&language=en-US&query=${search}`
     );
@@ -51,5 +55,39 @@ export const fetchCredits = async (id) => {
    const credits = response.data;
    const dirId = director.id;
 
-  return { director: director, credits: credits, id: dirId };
+   // Тут, вместо 'services.js/is film in favorites?' - надо добавить функцию, которая получает данные пользователя с firestore
+   // Вот она:
+   //checking if film in array
+   //это сраный промис, надо переделать, чтобы он массив возвращал, а не промис
+   const fetchUserData = async () => {
+    const User = getAuth().currentUser;
+    const docRef = doc(FIREBASE_DB, 'Users', User.uid);
+  
+    try {
+      const userDocs = await getDoc(docRef);
+  
+      if (userDocs.exists()) {
+        const userData = userDocs.data();
+        // console.log('userdata ',userData.films)
+        const films = userData.films || [];
+        const filmIds = films.map((film) => film.id);
+        console.log('servis: ',filmIds)
+        return filmIds;
+      } else {
+        console.log('Документ не найден');
+        return []; // Если документ не найден, возвращаем пустой массив
+      }
+    } catch (error) {
+      console.error('Ошибка при получении данных пользователя:', error);
+      return []; // Если произошла ошибка, возвращаем пустой массив
+    }
+  }
+
+  return { 
+    credits: credits,
+    director: director,
+    id:dirId,
+    favorite: '',
+
+  };
 };

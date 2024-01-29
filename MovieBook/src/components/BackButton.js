@@ -7,10 +7,10 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
  *Stack and takes us back, in this case, HomeScreen.
 */
 
-export default BackButton = ({ navigation }) => {
+export default BackButton = ({ navigation, color }) => {
   return (
     <TouchableOpacity style={styles.backBtn} onPress={() => navigation.pop()}>
-      <Ionicons name="md-arrow-back" size={25} color="white" />
+      <Ionicons name="md-arrow-back" size={25} color={color} />
     </TouchableOpacity>
   );
 };

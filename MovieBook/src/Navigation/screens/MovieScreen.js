@@ -33,8 +33,10 @@ export default function MovieScreen({ navigation, route }) {
   const [credits, setCredits] = useState(null);
   const [loading, setLoading] = useState(true);
   const [director, setDirector] = useState('');
-  const [isFavorite, setIsFavorite] = useState()
   const [id, setId] = useState(0)
+
+  const [isFavorite, setIsFavorite] = useState()
+  
   /**
    * below, we are getting the params that we passed
    * while navigating from HomeScreen.
@@ -60,48 +62,13 @@ export default function MovieScreen({ navigation, route }) {
    setCredits(data.credits);
    setDirector(data.director);
    setId(data.credits.id)
+   // Тут fetch в services на запрос favorites для дальнейшего рендеринга в infoCard
+   setIsFavorite(data.favorite)
+   console.log('mives', data.favorite);
+ 
    setLoading(false);
 
 
-
-   
-   //checking if film in array
-   const fetchUserData = async () => {
-    // Получаем ссылку на документ пользователя
-    const docRef = doc(FIREBASE_DB, 'Users', User.uid)
-  
-    try {
-      // Получаем данные о пользователе из Firestore
-      const userDocs = await getDoc(docRef);
-  
-      if (userDocs.exists()) {
-        // Если документ существует, извлекаем информацию о фильмах пользователя
-        const userData = userDocs.data();
-        // console.log('User data: ', userData)
-        
-        const films = userData.films;
-        // console.log('Films: ', films)
-  
-        films.find((film) => {
-          console.log(film)
-          film.id === movie
-        });
-        setIsFavorite(true)
-      } else {
-        console.log('Документ не найден');
-        setIsFavorite(false)
-      }
-    } catch (error) {
-      console.error('Ошибка при получении данных пользователя:', error);
-    }
-  };
-  fetchUserData()
-    
-        // if(movie in FIREBASE_DB.filmsArray){
-          // setIsFavorite(true)
-        // } else {
-        //   setIsFavorite(false)
-        // }
     });
   }, []);
 
@@ -116,7 +83,7 @@ export default function MovieScreen({ navigation, route }) {
         style={Styles.banner}
       >
         <View style={Styles.informa}>
-          <BackButton navigation={navigation} />
+          <BackButton navigation={navigation} color='white'/>
           <InfoCard movie={movie} director={director} favorite={isFavorite}/>
         </View>
       </ImageBackground>
