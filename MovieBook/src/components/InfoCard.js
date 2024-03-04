@@ -3,7 +3,7 @@ import { Text, View, Image, StyleSheet, Dimensions } from 'react-native';
 
 import ProgressBar from './ProgressBar';
 
-import { doc, setDoc } from 'firebase/firestore'
+import { doc, setDoc, getDoc } from 'firebase/firestore'
 import { FIREBASE_DB, storage } from '../../firebase';
 import { getAuth, updateProfile } from 'firebase/auth';
 
@@ -19,24 +19,61 @@ const User = getAuth().currentUser;
  *details like which we will use to show poster, title, overview, 
  *and vote_average.
  */
-const InfoCard = ({ movie, director, favorite }) => {
-  const [favoriteColor, setFavoriteColor] = useState(favorite === true ? favorite = 'gold' : favorite = 'white')
+ const InfoCard = ({ movie, director }) => {
+  const [favoriteColor, setFavoriteColor] = useState('white'); // Изначально цвет иконки "избранное" устанавливаем как белый
 
-  async function saveToFavorite(){
-    try {
-      const docRef = doc(FIREBASE_DB, 'Users', User.uid)
-      const result = await setDoc(docRef, {
-        films: [movie],
-      }, { merge: true})
+  useEffect(() => {
+    async function checkFavoriteMovies() {
+      try {
+        const docRef = doc(FIREBASE_DB, 'Users', User.uid);
+        const userDoc = await getDoc(docRef);
+        const userData = userDoc.data();
+        const films = userData.films || [];
 
-      setFavoriteColor('gold')
-      alert('suc')
-    } catch (error) {
-      console.log(error)
-      console.log(User.uid)
+        const filmExists = films.some(film => film.id === movie.id);
 
+        if (filmExists) {
+          setFavoriteColor('gold'); // Если фильм есть в списке, устанавливаем цвет иконки "избранное" как золотой
+        } else {
+          setFavoriteColor('white'); // Если фильма нет в списке, устанавливаем цвет иконки "избранное" как белый
+        }
+      } catch (error) {
+        console.error(error);
+      }
     }
-  }
+
+    checkFavoriteMovies();
+  }, [movie]); // Запускаем проверку при изменении movie
+
+
+  async function saveToFavorite() {
+    try {
+        const docRef = doc(FIREBASE_DB, 'Users', User.uid);
+        const userDoc = await getDoc(docRef);
+        const userData = userDoc.data();
+        const films = userData.films || []; // Получаем текущий массив фильмов или создаем пустой массив, если его нет
+
+        // Проверяем, есть ли уже фильм с таким же id в массиве films
+        const filmExists = films.some(film => film.id === movie.id);
+
+        if (!filmExists) {
+            // Если фильма еще нет в массиве, добавляем его
+            const updatedFilms = [...films, movie];
+            await setDoc(docRef, {
+                films: updatedFilms,
+            }, { merge: true });
+            console.log('Movie added to favorites');
+            setFavoriteColor('gold');
+            alert('Movie added to favorites');
+        } else {
+            // Если фильм уже есть в массиве, выводим сообщение об этом
+            console.log('Movie already in favorites');
+            alert('Movie already in favorites');
+        }
+    } catch (error) {
+        console.error(error);
+    }
+}
 
   return (
     <View style={styles.infoCard}>

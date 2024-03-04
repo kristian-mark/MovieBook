@@ -8,7 +8,6 @@ import {
   Dimensions,
   FlatList,
 } from 'react-native';
-import { async } from '@firebase/util';
 import Constants from 'expo-constants';
 
 import Loading from '../../components/Loading';
@@ -27,7 +26,7 @@ import { fetchCredits } from '../../TMDB.js/services';
 // Firebase imports
 import { getAuth, updateProfile } from 'firebase/auth';
 import { FIREBASE_DB } from '../../../firebase';
-import { collection, doc, getDoc } from 'firebase/firestore';
+import { doc, getDoc } from 'firebase/firestore';
 
 export default function MovieScreen({ navigation, route }) {
   const [credits, setCredits] = useState(null);
@@ -83,7 +82,7 @@ export default function MovieScreen({ navigation, route }) {
         // console.log('Films: ', films)
   
         films.find((film) => {
-          console.log(film)           //appears, when you click on film
+          // console.log(film)           //appears, when you click on film
           film.id === movie
         });
         setIsFavorite(true)

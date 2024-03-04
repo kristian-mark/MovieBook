@@ -16,7 +16,8 @@ export default function LoginScreen() {
             if(error.code === 'auth/invalid-email'){
                 alert('Invalid email.')}
             else if (error.code === 'auth/invalid-login-credentials'){
-                alert("Invalid login or password")}
+                alert("Invalid login or password")
+            }
                 else {
                     alert("Unexpected error. Try again later or contact support.")
                 }

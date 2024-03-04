@@ -1,9 +1,12 @@
 import axios from 'axios';
+import { doc, getDoc } from 'firebase/firestore';
 
 /**
  * we are importing the base URL and API_KEY from our const.js 
  * */
 import { URL, API_KEY } from './const';
+import { FIREBASE_DB } from '../../firebase';
+import { getAuth, updateProfile } from 'firebase/auth';
 
 /**
  * fetchMovies takes one parameter, "search".
@@ -14,6 +17,20 @@ import { URL, API_KEY } from './const';
  * and if the search term is not empty, we will fetch the data of
  * searched movie.
 */
+export const fetchFavoriteMovies = async () => {
+  try {
+    const User = getAuth().currentUser;
+    console.log('Fetching favorite movies')
+    const docRef = doc(FIREBASE_DB, 'Users', User.uid)
+    const userDocs = await getDoc(docRef);
+    const userData = userDocs.data();
+    return userData.films || []; // возвращаем массив фильмов или пустой массив, если данных нет
+  } catch (error) {
+    console.error('Error fetching favorite movies:', error);
+    return []; // возвращаем пустой массив в случае ошибки
+  }
+}
+
 
 export const fetchMovies = async (search) => {
   console.log('fetch movies', search);

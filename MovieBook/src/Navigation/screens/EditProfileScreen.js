@@ -56,37 +56,36 @@ if(hasCameraPermission === false){
 
 // Upload Image to firestore
 async function uploadImage(uri, fileType) {
-  const response = await fetch(uri);
-  const blob = await response.blob();
-  // Storage place
-  const storageRef = ref(storage, `Users/${User.uid}/ProfilePicture`);
-  const uploadTask = uploadBytesResumable(storageRef, blob)
+  try {
+    const response = await fetch(uri);
+    const blob = await response.blob();
+    // Storage place
+    const storageRef = ref(storage, `Users/${User.uid}/ProfilePicture`);
+    const uploadTask = uploadBytesResumable(storageRef, blob)
 
-  // Listen for events
-  uploadTask.on('state_changed', 
-  (snapshot) => {
-    const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-    // You can use progress if you want something like progressBar:
-    // setProgress(progress.toFixed())
-    console.log('Upload is ' + progress + '% done')
-  },
-  (error) => {
-    console.log('Error: ' + error)
-  },
-  () => {
-    getDownloadURL(uploadTask.snapshot.ref).then(async (downloadURL) =>{
-      // Save record
-
-      // console.log('File available at ', downloadURL);
-      // setImage(downloadURL)
-      await saveRecord(fileType, downloadURL, new Date().toISOString())
-      updateProfile(User, {photoURL: downloadURL})
-    })
+    // Listen for events
+    uploadTask.on('state_changed', 
+      (snapshot) => {
+        const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+        console.log('Upload is ' + progress + '% done')
+      },
+      (error) => {
+        console.log('Error: ' + error)
+      },
+      () => {
+        getDownloadURL(uploadTask.snapshot.ref).then(async (downloadURL) =>{
+          // Save record
+          await saveRecord(fileType, downloadURL, new Date().toISOString())
+          await updateProfile(User, {photoURL: downloadURL})
+        })
+      }
+    );
+  } catch (error) {
+    console.error('Error uploading image:', error);
   }
-  )
 }
 
-// Saving to storage
+// Saving to storage //ЭТИ ДАННЫЕ ДОЛЖНЫ ДОБАВЛЯТЬСЯ ТОЛЬКО ПРИ СОЗДАНИИ НОВОГО АККАУНТА И БОЛЬШЕ НИКОГДА
 async function saveRecord(fileType, url, createdAt){
   try {
     const docRef = doc(FIREBASE_DB, 'Users', User.uid)
@@ -109,52 +108,47 @@ async function saveRecord(fileType, url, createdAt){
 
 
 // Photo/Image picker
-const pickImageFromLibrary = async () =>{
+const pickImageFromLibrary = async () => {
   try {
-  let result = await ImagePicker.launchImageLibraryAsync({
-    mediaTypes: ImagePicker.MediaTypeOptions.Images,
-    allowsEditing: true,
-    aspect: [1,1],
-    quality: 1
-  })
+    let result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsEditing: true,
+      aspect: [1,1],
+      quality: 1
+    });
 
-  if(!result.canceled){
-    console.log(result.assets[0].uri)
-    setImage(result.assets[0].uri)
-    updateProfile(User, {photoURL: image})
-  } else {
-    handleCloseModal()
+    if (!result.cancelled) {
+      console.log(result.assets[0].uri)
+      setImage(result.assets[0].uri);
+      await uploadImage(result.assets[0].uri, 'image');
+    } else {
+      handleCloseModal();
+    }
+  } catch (error) {
+    console.log('Canceled by user: ' + error);
+    handleCloseModal();
   }
-  await uploadImage(result.assets[0].uri, 'image');
-  await saveRecord('image', )
-  handleCloseModal();
-} catch (error) {
-  console.log('Canceled by user: ' + error)
-  handleCloseModal()
-}
 }
 
-const takePhotoFromCamera = async () =>{
-try {
-  let result = await ImagePicker.launchCameraAsync({
-    mediaTypes: ImagePicker.MediaTypeOptions.Images,
-    allowsEditing: true,
-    aspect: [1,1],
-    quality: 1,
-  })
+const takePhotoFromCamera = async () => {
+  try {
+    let result = await ImagePicker.launchCameraAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsEditing: true,
+      aspect: [1,1],
+      quality: 1,
+    });
 
-  if(!result.canceled){
-    console.log(result.assets[0].uri)
-    setImage(result.assets[0].uri)
-    updateProfile(User, {photoURL: image})
-  } else {
+    if (!result.cancelled) {
+      console.log(result.assets[0].uri)
+      setImage(result.assets[0].uri);
+      await uploadImage(result.assets[0].uri, 'image');
+    }
+    handleCloseModal();
+  } catch (error) {
+    console.log('Canceled by user: ' + error);
+    handleCloseModal();
   }
-  await uploadImage(result.assets[0].uri, 'image');
-  handleCloseModal();
-} catch (error) {
-  console.log('Canceled by user: ' + error)
-  handleCloseModal()
-}
 }
 
 // BottomSheet
