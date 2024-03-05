@@ -18,14 +18,19 @@ import { StyleSheet, Text, View, Image } from 'react-native';
 const ProfileThumb = ({ item }) => {
   return (
     <View style={styles.profileThumb}>
-      <>
+      {item.profile_path ? (
         <Image
           source={{
-            uri: `http://image.tmdb.org/t/p/w342${item?.profile_path}`,
+            uri: `http://image.tmdb.org/t/p/w342${item.profile_path}`,
           }}
           style={styles.crewImages}
         />
-      </>
+      ) : (
+        <Image
+          source={require('../assets/no-image.jpg')} // Путь к изображению "noprofile-picture"
+          style={styles.crewImages}
+        />
+      )}
       <View style={styles.nameCard}>
         <Text style={styles.title}>{item.name}</Text>
       </View>

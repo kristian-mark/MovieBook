@@ -125,9 +125,10 @@ export default function MovieScreen({ navigation, route }) {
           {credits && (
             <FlatList
               style={Styles.list}
-              keyExtractor={( item, index ) => String(index)}
+              keyExtractor={(item, index) => String(index)}
               data={credits.cast}
               renderItem={({ item }) => <ProfileThumb key={id} item={item} />}
+              // renderItem={({ item }) => item.profile_path ? (<ProfileThumb key={item.id} item={item} />) : null }
               horizontal
               showsHorizontalScrollIndicator={false}
             />
@@ -141,6 +142,7 @@ export default function MovieScreen({ navigation, route }) {
               keyExtractor={( item, index ) => String(index)}
               data={credits.crew}
               renderItem={({ item }) => <ProfileThumb key={id} item={item} />}
+              // renderItem={({ item }) => item.profile_path ? (<ProfileThumb key={item.id} item={item} />) : null }
               horizontal
               showsHorizontalScrollIndicator={false}
             />

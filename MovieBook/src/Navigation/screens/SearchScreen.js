@@ -97,13 +97,6 @@ export default function SearchScreen({navigation}) {
                     <Card style={styles.movieCard}>
                       <TouchableOpacity
                         onPress={() => {
-                          /**
-                            * here we are navigating to "MovieScreen", which has a path
-                            * name of "Movie" which we set back in <Stack.Screen/>    
-                            * of App.js.
-                            * We are also passing the parameter with it, {movie: item}
-                            * we will access it in MovieScreen
-                           */
                           navigation.navigate('Movie', { movie: item });
                         }}>
                         <Image

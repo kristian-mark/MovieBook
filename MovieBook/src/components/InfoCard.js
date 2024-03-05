@@ -1,41 +1,41 @@
 import React, { useEffect, useState } from 'react';
 import { Text, View, Image, StyleSheet, Dimensions } from 'react-native';
-
 import ProgressBar from './ProgressBar';
-
 import { doc, setDoc, getDoc } from 'firebase/firestore'
 import { FIREBASE_DB, storage } from '../../firebase';
 import { getAuth, updateProfile } from 'firebase/auth';
-
 import IonIcon from 'react-native-vector-icons/Ionicons'
 import Fontisto from 'react-native-vector-icons/Fontisto'
 
 const screen = Dimensions.get('window');
-const User = getAuth().currentUser;
 
 /**
  * Our InfoCard component takes two props, "movie" and "director" 
- *from MovieScreen. "movie" prop is the object holding movie 
- *details like which we will use to show poster, title, overview, 
- *and vote_average.
+ * from MovieScreen. "movie" prop is the object holding movie 
+ * details like which we will use to show poster, title, overview, 
+ * and vote_average.
  */
- const InfoCard = ({ movie, director }) => {
-  const [favoriteColor, setFavoriteColor] = useState('white'); // Изначально цвет иконки "избранное" устанавливаем как белый
+const InfoCard = ({ movie, director }) => {
+  const [favoriteColor, setFavoriteColor] = useState('white'); // Default collor is 'white' for favorite icon
+  const auth = getAuth();
+  const currentUser = auth.currentUser;
 
   useEffect(() => {
     async function checkFavoriteMovies() {
       try {
-        const docRef = doc(FIREBASE_DB, 'Users', User.uid);
-        const userDoc = await getDoc(docRef);
-        const userData = userDoc.data();
-        const films = userData.films || [];
+        if (currentUser) {
+          const docRef = doc(FIREBASE_DB, 'Users', currentUser.uid);
+          const userDoc = await getDoc(docRef);
+          const userData = userDoc.data();
+          const films = userData.films || [];
 
-        const filmExists = films.some(film => film.id === movie.id);
+          const filmExists = films.some(film => film.id === movie.id);
 
-        if (filmExists) {
-          setFavoriteColor('gold'); // Если фильм есть в списке, устанавливаем цвет иконки "избранное" как золотой
-        } else {
-          setFavoriteColor('white'); // Если фильма нет в списке, устанавливаем цвет иконки "избранное" как белый
+          if (filmExists) {
+            setFavoriteColor('gold'); // If film in list - we setting collor as 'gold'
+          } else {
+            setFavoriteColor('white'); // Else 'white'
+          }
         }
       } catch (error) {
         console.error(error);
@@ -43,37 +43,42 @@ const User = getAuth().currentUser;
     }
 
     checkFavoriteMovies();
-  }, [movie]); // Запускаем проверку при изменении movie
+  }, [movie, currentUser]); // Starting checking when movie and currentUser is changing
 
 
   async function saveToFavorite() {
     try {
-        const docRef = doc(FIREBASE_DB, 'Users', User.uid);
+      if (currentUser) {
+        const docRef = doc(FIREBASE_DB, 'Users', currentUser.uid);
         const userDoc = await getDoc(docRef);
         const userData = userDoc.data();
-        const films = userData.films || []; // Получаем текущий массив фильмов или создаем пустой массив, если его нет
+        const films = userData.films || [];
 
-        // Проверяем, есть ли уже фильм с таким же id в массиве films
+        // Checking if film with this ID already in Films massive
         const filmExists = films.some(film => film.id === movie.id);
-
         if (!filmExists) {
-            // Если фильма еще нет в массиве, добавляем его
-            const updatedFilms = [...films, movie];
-            await setDoc(docRef, {
-                films: updatedFilms,
-            }, { merge: true });
-            console.log('Movie added to favorites');
-            setFavoriteColor('gold');
-            alert('Movie added to favorites');
+          // If film not in massive, we adding it
+          const updatedFilms = [...films, movie];
+          await setDoc(docRef, {
+            films: updatedFilms,
+          }, { merge: true });
+          console.log('Movie added to favorites');
+          setFavoriteColor('gold');
         } else {
-            // Если фильм уже есть в массиве, выводим сообщение об этом
-            console.log('Movie already in favorites');
-            alert('Movie already in favorites');
+          console.log('Movie already in favorites');
+          // If it is in massive, we removing
+          const updatedFilms = films.filter(film => film.id !== movie.id);
+          await setDoc(docRef, {
+            films: updatedFilms,
+          }, { merge: true });
+          console.log('Movie removed from favorites');
+          setFavoriteColor('white');
         }
+      }
     } catch (error) {
-        console.error(error);
+      console.error(error);
     }
-}
+  }
 
   return (
     <View style={styles.infoCard}>
@@ -88,11 +93,10 @@ const User = getAuth().currentUser;
         <View style={styles.container}>
           <Text style={styles.title}>
             {movie.original_title.length < 20
-            ? movie.original_title
-            : movie.original_title.substr(0, 20) + '...'}
-            </Text>
-          {/* Need to add logic to save films to favorites somehow */}
-          <Fontisto name='favorite' size={20} color={favoriteColor} onPress={saveToFavorite}/>
+              ? movie.original_title
+              : movie.original_title.substr(0, 20) + '...'}
+          </Text>
+          <Fontisto name='favorite' size={20} color={favoriteColor} onPress={saveToFavorite} />
         </View>
 
         {/* Film discription */}
@@ -103,15 +107,15 @@ const User = getAuth().currentUser;
             : movie.overview.substr(0, 100) + '...'}
         </Text>
         <>
-          <Text style={{ color: 'white', fontWeight: 500}}>DIRECTOR:</Text>
-          <Text style={{ color: 'white', fontSize: 12, bottom: 8, left: 20, fontWeight: 400}}>{director?.name}</Text>
+          <Text style={{ color: 'white', fontWeight: 500 }}>DIRECTOR:</Text>
+          <Text style={{ color: 'white', fontSize: 12, bottom: 8, left: 20, fontWeight: 400 }}>{director?.name}</Text>
         </>
         <View style={{ flexDirection: 'row', alignItems: 'center' }}>
           <ProgressBar vote_average={movie.vote_average} />
           <Text style={{ color: 'white', fontWeight: 'bold' }}>
             {movie.vote_average.toFixed(1)}
           </Text>
-          <IonIcon name='star' size={15} color={'gold'} style={{left: 5}} />
+          <IonIcon name='star' size={15} color={'gold'} style={{ left: 5 }} />
         </View>
       </View>
     </View>
@@ -139,13 +143,13 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: 'bold',
   },
-  
+
   container: {
     flexDirection: 'row',
     justifyContent: 'space-evenly',
     alignItems: 'center',
   },
-  
+
   textInfo: {
     left: 10,
     right: 10,

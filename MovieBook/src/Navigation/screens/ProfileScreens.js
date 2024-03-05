@@ -3,7 +3,7 @@ import { View, StyleSheet, Text, ScrollView, SafeAreaView, Image, TouchableOpaci
 import { getAuth } from 'firebase/auth';
 import { FIREBASE_AUTH } from '../../../firebase'
 import IonIcons from 'react-native-vector-icons/Ionicons'
-import image from '../../assets/no-profile-picture.png'
+import NoImage from '../../assets/no-profile-picture.png'
 
 export default function ProfileScreen({ navigation }) {
     const User = getAuth().currentUser;
@@ -18,7 +18,7 @@ return (
         {/* UID */}
         <Text style={Styles.userUid}>UID: {User.uid ? User.uid : 'undefined'}</Text>
             <View style={Styles.imgContainer}>
-                <Image style={Styles.userImg} source={{uri: User.photoURL != image ? User.photoURL : require('../../assets/no-profile-picture.png')}}/>
+                <Image style={Styles.userImg} source={{uri: User.photoURL != NoImage ? User.photoURL : require('../../assets/no-profile-picture.png')}}/>
                     <View style={Styles.textContainer}>
                         {/* Name */}
                         <View style={Styles.userNameContainer}>

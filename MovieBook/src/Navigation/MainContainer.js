@@ -16,7 +16,7 @@ import EditProfileScreen from "./screens/EditProfileScreen";
 import MovieScreen from "./screens/MovieScreen";
 
 // Screen names
-const favoritesName = 'Favorites'
+const favoritesName = 'Favorite Movies'
 const searchName = 'Search'
 const profileName = 'Profile'
 const editProfile = 'Edit Profile'
