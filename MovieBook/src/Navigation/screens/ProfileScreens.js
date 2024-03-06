@@ -2,33 +2,30 @@ import React, { useEffect, useState } from 'react';
 import { View, StyleSheet, Text, ScrollView, SafeAreaView, Image, TouchableOpacity } from 'react-native';
 import { getAuth } from 'firebase/auth';
 import { FIREBASE_AUTH, FIREBASE_DB } from '../../../firebase'
-import { doc, getDoc } from 'firebase/firestore'
+import { doc, onSnapshot } from 'firebase/firestore'
 import IonIcons from 'react-native-vector-icons/Ionicons'
-import NoImage from '../../assets/no-profile-picture.png'
+
 
 export default function ProfileScreen({ navigation }) {
     const User = getAuth().currentUser;
     const [name, setName] = useState ('')
     const [phone, setPhone] = useState ('')
+    const [picture, setPicture] =useState(User.photoURL)
 
-useEffect(() => {
-    async function userData() {
-        try{
-            if (User){
-                const docRef = doc(FIREBASE_DB, 'Users', User.uid);
-                const userDoc = await getDoc(docRef);
-                const userData = userDoc.data();
-
-                setName(userData.name)
-                setPhone(userData.phone)
-
+    useEffect(() => {
+        const unsubscribe = onSnapshot(doc(FIREBASE_DB, 'Users', User.email), (doc) => {
+            console.log('1')
+            if (doc.exists()) {
+                const userData = doc.data();
+                setName(userData.name);
+                setPhone(userData.phone);
+                setPicture(userData.url);
+            } else {
+                console.log(`File doesn't exist`)
             }
-        } catch (error) {
-            console.error(error)
-        }
-    }
-    userData()
-},[User])
+        });
+        return () => unsubscribe();
+    }, [User]);
 
 return (
     <SafeAreaView  style={{flex: 1}}>
@@ -40,7 +37,7 @@ return (
         {/* UID */}
         <Text style={Styles.userUid}>UID: {User.uid ? User.uid : 'undefined'}</Text>
             <View style={Styles.imgContainer}>
-                <Image style={Styles.userImg} source={{uri: User.photoURL != NoImage ? User.photoURL : require('../../assets/no-profile-picture.png')}}/>
+                <Image style={Styles.userImg} source={{uri: picture}}/>
                     <View style={Styles.textContainer}>
                         {/* Name */}
                         <View style={Styles.userNameContainer}>
@@ -75,7 +72,7 @@ return (
                 </TouchableOpacity>
 
                 {/* Donate */}
-                <TouchableOpacity onPress={() => {console.log(User)}} style={Styles.buttonContent}>
+                <TouchableOpacity onPress={() => {console.log(User.email)}} style={Styles.buttonContent}>
                         <Text style={Styles.settingsButtonsText}>Donate</Text>
                         <IonIcons name='arrow-forward' size={20} color={'black'} /> 
                 </TouchableOpacity>
@@ -127,6 +124,7 @@ userImg: {
     height: 110,
     width: 110,
     borderRadius: 75,
+    backgroundColor: 'white'
 },
 
 //

@@ -16,20 +16,35 @@ export default function LoginScreen() {
         setIsRegistering(!isRegistering);
     };
 
-    const signIn = async () => {
-        try {
-            await signInWithEmailAndPassword(auth, email, password);
-        } catch (error) {
-            console.log(error);
-            if (error.code === 'auth/invalid-email') {
-                alert('Invalid email.');
-            } else if (error.code === 'auth/wrong-password') {
-                alert("Invalid password");
-            } else {
-                alert("Unexpected error. Try again later or contact support.");
-            }
-            throw error;
-        }
+    const signIn = () => {
+        signInWithEmailAndPassword(auth, email, password)
+            .then(() => {
+                alert('Welcome back!')
+            })
+            .catch((error) => {
+                console.log(error);
+                switch(error.code) {
+                    case 'auth/invalid-email':
+                        alert('Invalid email.');
+                        break;
+                    case 'auth/wrong-password':
+                        alert('Invalid login or password');
+                        break;
+                    case 'auth/user-disabled':
+                        alert('Your account was disabled. Please contact support at zaluckijm@gmail.com');
+                        break;
+                    case 'https://firebase.google.com/support':
+                        alert('Firebase server bug. Please report it to https://firebase.google.com/support');
+                        break;
+                    case 'auth/invalid-creation-time':
+                        alert('Your time must be a valid UTC date')
+                        break;
+                    default:
+                        alert('Unexpected error. Try again later or contact support.');
+                        break;
+                }
+                throw error;
+            });
     };
 
     const signUp = async () => {
@@ -40,14 +55,16 @@ export default function LoginScreen() {
         try {
             await createUserWithEmailAndPassword(auth, email, password);
             const createdAt = Date.now();
-            const docRef = doc(FIREBASE_DB, 'Users', auth.currentUser.uid);
+            const docRef = doc(FIREBASE_DB, 'Users', auth.currentUser.email);
             await setDoc(docRef, {
                 createdAt,
                 user_ID: auth.currentUser.uid,
                 name: name,
                 phone: phone,
                 email: auth.currentUser.email,
-                url: '',
+                url: 'https://firebasestorage.googleapis.com/v0/b/moviebook-44898.appspot.com/o/no-profile-picture.png?alt=media&token=bb77bd19-34a3-438a-9925-a0b63e80d4b6',
+                country: '',
+                city: '',
                 films: [],
             }, { merge: true });
             alert('Check your Email!');
@@ -99,6 +116,7 @@ export default function LoginScreen() {
                         />
                         <TextInput
                             placeholder='Phone'
+                            keyboardType='number-pad'
                             value={phone}
                             onChangeText={(text) => setPhone(text)}
                             style={[Styles.input, phone === '' ? Styles.invalidInput : null]}

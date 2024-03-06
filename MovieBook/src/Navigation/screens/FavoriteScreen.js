@@ -29,12 +29,12 @@ export default function FavoritesScreen({ navigation }) {
 
     // Обновляем список избранных фильмов при каждом изменении в Firestore
     useEffect(() => {
-        const unsubscribe = onSnapshot(doc(FIREBASE_DB, 'Users', User.uid), () => {
+        const unsubscribe = onSnapshot(doc(FIREBASE_DB, 'Users', User.email), () => {
             loadFavoriteMovies();
         });
 
         return () => unsubscribe();
-    }, [loadFavoriteMovies, User.uid]);
+    }, [loadFavoriteMovies, User.email]);
 
     return loading ? (
         <Loading />

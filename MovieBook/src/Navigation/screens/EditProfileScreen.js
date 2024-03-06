@@ -1,11 +1,12 @@
 import React, { useRef, useState, useEffect } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, ImageBackground, TextInput } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
 
 // Firebase imports
 import { getAuth, updateProfile } from 'firebase/auth';
 import { FIREBASE_DB, storage } from '../../../firebase';
 import { ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage'
-import { doc, setDoc } from 'firebase/firestore'
+import { doc, setDoc, onSnapshot } from 'firebase/firestore'
 
 // Image Picker import
 import * as ImagePicker from 'expo-image-picker'
@@ -23,11 +24,17 @@ import { BottomSheetModal, BottomSheetModalProvider} from '@gorhom/bottom-sheet'
 // Main export default
 export default function EditProfileScreen() {
 const User = getAuth().currentUser;
+const navigation = useNavigation();
 
 const bottomSheetModalRef = useRef(null)
 const [hasGalleryPermission, setHasGalleryPermission] = useState(null)
 const [hasCameraPermission, setHasCameraPermission] = useState(null)
 const [image, setImage] = useState(User.photoURL)
+const [picture, setPicture] = useState('')
+const [city, setCity] = useState('')
+const [country, setCountry] = useState('')
+const [phone, setPhone] =useState('')
+const [name, setName] =useState('')
 
 // const [progress, setProgress] = useState(0);
 
@@ -41,6 +48,23 @@ useEffect(() =>{
     setHasCameraPermission(cameraStatus.status === 'granted')
   })()
 }, [])
+
+useEffect(() => {
+  const unsubscribe = onSnapshot(doc(FIREBASE_DB, 'Users', User.email), (doc) => {
+      if (doc.exists()) {
+          const userData = doc.data();
+          setPicture(userData.url);
+          setCountry(userData.country)
+          setCity(userData.city)
+          setPhone(userData.phone)
+          setName(userData.name)
+      } else {
+      }
+  }, [User]);
+
+  // Возвращаем функцию для отписки от подписки при размонтировании компонента
+  return () => unsubscribe();
+}, [User]);
 
 // Permissions
 if(hasGalleryPermission === false){
@@ -60,7 +84,7 @@ async function uploadImage(uri, fileType) {
     const response = await fetch(uri);
     const blob = await response.blob();
     // Storage place
-    const storageRef = ref(storage, `Users/${User.uid}/ProfilePicture`);
+    const storageRef = ref(storage, `Users/${User.email}/ProfilePicture`);
     const uploadTask = uploadBytesResumable(storageRef, blob)
 
     // Listen for events
@@ -85,19 +109,14 @@ async function uploadImage(uri, fileType) {
   }
 }
 
-// Saving to storage //ЭТИ ДАННЫЕ ДОЛЖНЫ ДОБАВЛЯТЬСЯ ТОЛЬКО ПРИ СОЗДАНИИ НОВОГО АККАУНТА И БОЛЬШЕ НИКОГДА
 async function saveRecord(fileType, url, createdAt){
   try {
-    const docRef = doc(FIREBASE_DB, 'Users', User.uid)
+    const docRef = doc(FIREBASE_DB, 'Users', User.email)
     const result = await setDoc(docRef, {
       createdAt,
       user_ID: User.uid,
-      fname: '',
-      lname: '',
-      email: User.email,
       fileType,
       url,
-      films: [],
     }, { merge: true})
 
     console.log('Document saved correctly')
@@ -118,7 +137,6 @@ const pickImageFromLibrary = async () => {
     });
 
     if (!result.cancelled) {
-      console.log(result.assets[0].uri)
       setImage(result.assets[0].uri);
       await uploadImage(result.assets[0].uri, 'image');
     } else {
@@ -139,7 +157,7 @@ const takePhotoFromCamera = async () => {
       quality: 1,
     });
 
-    if (!result.cancelled) {
+    if (!result.canceled) {
       console.log(result.assets[0].uri)
       setImage(result.assets[0].uri);
       await uploadImage(result.assets[0].uri, 'image');
@@ -160,11 +178,20 @@ function handleCloseModal(){
   bottomSheetModalRef.current?.close();
 }
 
-function saveChanges() {
-updateProfile(User, {
-  // displayName: '',
-  // photoURL: '',
-})
+const saveChanges = async () => {
+  try {
+    const docRef = doc(FIREBASE_DB, 'Users', User.email);
+    await setDoc(docRef, {
+      name: name,
+      phone: phone,
+      country: country,
+      city: city,
+    }, { merge: true })
+    navigation.pop()
+  } catch (error) {
+console.error(error)
+  }
+  console.log('Успех')
 }
 
   return (
@@ -181,7 +208,7 @@ updateProfile(User, {
             }}>
               {/* ProfileImage */}
               <ImageBackground
-                source={{uri: User.photoURL != null ? User.photoURL : image}}
+                source={{uri: picture ? picture : image}}
                 style={{height: 100, width: 100}}
                 imageStyle={{borderRadius: 15}}
               >
@@ -203,35 +230,17 @@ updateProfile(User, {
               </ImageBackground>
             </View>
           </TouchableOpacity>
-          {/* User Name */}
-          <Text
-            style={{
-              marginTop: 10,
-              fontSize: 18,
-              fontWeight: 'bold'
-            }}>
-            {User.displayName}
-            </Text>
         </View>
 
-        {/* First Name Input */}
+        {/* Name Input */}
         <View style={Styles.action}>
           <FontAwesome name='user-o' size={20} />
           <TextInput
-            placeholder='First Name'
+            placeholder='Name'
             placeholderTextColor='#666666'
             autoCorrect={false}
-            style={Styles.textInput}
-          />
-        </View>
-
-        {/* Last Name Input */}
-        <View style={Styles.action}>
-          <FontAwesome name='user-o' size={20} />
-          <TextInput
-            placeholder='Last Name'
-            placeholderTextColor='#666666'
-            autoCorrect={false}
+            value={name ? name : ''}
+            onChangeText={(text) => setName(text)}
             style={Styles.textInput}
           />
         </View>
@@ -244,18 +253,8 @@ updateProfile(User, {
             placeholderTextColor='#666666'
             keyboardType='number-pad'
             autoCorrect={false}
-            style={Styles.textInput}
-          />
-        </View>
-
-        {/* Email Input */}
-        <View style={Styles.action}>
-          <FontAwesome name='envelope-o' size={20} />
-          <TextInput
-            placeholder='Email'
-            placeholderTextColor='#666666'
-            keyboardType='email-address'
-            autoCorrect={false}
+            value={phone ? phone : ''}
+            onChangeText={(text) => setPhone(text)}
             style={Styles.textInput}
           />
         </View>
@@ -267,6 +266,8 @@ updateProfile(User, {
             placeholder='Counry'
             placeholderTextColor='#666666'
             autoCorrect={false}
+            value={country ? country : ''}
+            onChangeText={(text) => setCountry(text)}
             style={Styles.textInput}
           />
         </View>
@@ -278,9 +279,13 @@ updateProfile(User, {
             placeholder='City'
             placeholderTextColor='#666666'
             autoCorrect={false}
+            value={city ? city : ''}
+            onChangeText={(text) => setCity(text)}
             style={Styles.textInput}
           />
         </View>
+
+        {/* Submit Button */}
         <TouchableOpacity
           style={Styles.commandButton}
           onPress={saveChanges}

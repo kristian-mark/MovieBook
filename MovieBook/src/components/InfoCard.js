@@ -24,7 +24,7 @@ const InfoCard = ({ movie, director }) => {
     async function checkFavoriteMovies() {
       try {
         if (currentUser) {
-          const docRef = doc(FIREBASE_DB, 'Users', currentUser.uid);
+          const docRef = doc(FIREBASE_DB, 'Users', currentUser.email);
           const userDoc = await getDoc(docRef);
           const userData = userDoc.data();
           const films = userData.films || [];
@@ -49,7 +49,7 @@ const InfoCard = ({ movie, director }) => {
   async function saveToFavorite() {
     try {
       if (currentUser) {
-        const docRef = doc(FIREBASE_DB, 'Users', currentUser.uid);
+        const docRef = doc(FIREBASE_DB, 'Users', currentUser.email);
         const userDoc = await getDoc(docRef);
         const userData = userDoc.data();
         const films = userData.films || [];

@@ -12,7 +12,7 @@ export const fetchFavoriteMovies = async () => {
   try {
     const User = getAuth().currentUser;
     console.log('Fetching favorite movies')
-    const docRef = doc(FIREBASE_DB, 'Users', User.uid)
+    const docRef = doc(FIREBASE_DB, 'Users', User.email)
     const userDocs = await getDoc(docRef);
     const userData = userDocs.data();
     return userData.films || [];

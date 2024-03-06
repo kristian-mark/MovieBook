@@ -67,7 +67,7 @@ export default function MovieScreen({ navigation, route }) {
    //checking if film in array
    const fetchUserData = async () => {
     // Получаем ссылку на документ пользователя
-    const docRef = doc(FIREBASE_DB, 'Users', User.uid)
+    const docRef = doc(FIREBASE_DB, 'Users', User.email)
   
     try {
       // Получаем данные о пользователе из Firestore
