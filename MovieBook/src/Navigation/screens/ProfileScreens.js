@@ -1,12 +1,34 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, StyleSheet, Text, ScrollView, SafeAreaView, Image, TouchableOpacity } from 'react-native';
 import { getAuth } from 'firebase/auth';
-import { FIREBASE_AUTH } from '../../../firebase'
+import { FIREBASE_AUTH, FIREBASE_DB } from '../../../firebase'
+import { doc, getDoc } from 'firebase/firestore'
 import IonIcons from 'react-native-vector-icons/Ionicons'
 import NoImage from '../../assets/no-profile-picture.png'
 
 export default function ProfileScreen({ navigation }) {
     const User = getAuth().currentUser;
+    const [name, setName] = useState ('')
+    const [phone, setPhone] = useState ('')
+
+useEffect(() => {
+    async function userData() {
+        try{
+            if (User){
+                const docRef = doc(FIREBASE_DB, 'Users', User.uid);
+                const userDoc = await getDoc(docRef);
+                const userData = userDoc.data();
+
+                setName(userData.name)
+                setPhone(userData.phone)
+
+            }
+        } catch (error) {
+            console.error(error)
+        }
+    }
+    userData()
+},[User])
 
 return (
     <SafeAreaView  style={{flex: 1}}>
@@ -23,12 +45,12 @@ return (
                         {/* Name */}
                         <View style={Styles.userNameContainer}>
                             <Text style={Styles.desctirtion}>Name:</Text>
-                            <Text style={Styles.userInput}>{User.displayName ? User.displayName : 'no name'}</Text>
+                            <Text style={Styles.userInput}>{name ? name : 'no name'}</Text>
                         </View>
                         {/* Phone */}
                         <View style={Styles.userPhoneContainer}>
                             <Text style={Styles.desctirtion}>Phone number:</Text>
-                            <Text style={Styles.userInput}>{User.phoneNumber ? User.phoneNumber : 'no phone'}</Text>
+                            <Text style={Styles.userInput}>{phone ? phone : 'no phone'}</Text>
                         </View>
                         {/* Email */}
                         <View style={Styles.userMailContainer}>

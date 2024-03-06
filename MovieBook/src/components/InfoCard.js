@@ -3,7 +3,7 @@ import { Text, View, Image, StyleSheet, Dimensions } from 'react-native';
 import ProgressBar from './ProgressBar';
 import { doc, setDoc, getDoc } from 'firebase/firestore'
 import { FIREBASE_DB, storage } from '../../firebase';
-import { getAuth, updateProfile } from 'firebase/auth';
+import { getAuth } from 'firebase/auth';
 import IonIcon from 'react-native-vector-icons/Ionicons'
 import Fontisto from 'react-native-vector-icons/Fontisto'
 
