@@ -14,7 +14,6 @@ export default function ProfileScreen({ navigation }) {
 
     useEffect(() => {
         const unsubscribe = onSnapshot(doc(FIREBASE_DB, 'Users', User.email), (doc) => {
-            console.log('1')
             if (doc.exists()) {
                 const userData = doc.data();
                 setName(userData.name);
@@ -66,13 +65,13 @@ return (
                 </TouchableOpacity>
 
                 {/* Contact support */}
-                <TouchableOpacity onPress={() => {}} style={Styles.buttonContent}>
+                <TouchableOpacity onPress={() => {console.log('Contact support button')}} style={Styles.buttonContent}>
                         <Text style={Styles.settingsButtonsText}>Contact support </Text>
                         <IonIcons name='arrow-forward' size={20} color={'black'} /> 
                 </TouchableOpacity>
 
                 {/* Donate */}
-                <TouchableOpacity onPress={() => {console.log(User.email)}} style={Styles.buttonContent}>
+                <TouchableOpacity onPress={() => {console.log('Donate button')}} style={Styles.buttonContent}>
                         <Text style={Styles.settingsButtonsText}>Donate</Text>
                         <IonIcons name='arrow-forward' size={20} color={'black'} /> 
                 </TouchableOpacity>

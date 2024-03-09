@@ -40,14 +40,16 @@ const [name, setName] =useState('')
 
 // Instantly ask permission to photos and camera
 useEffect(() =>{
-  (async () => {
-    const galleryStatus = await ImagePicker.requestMediaLibraryPermissionsAsync()
-    const cameraStatus = await ImagePicker.getCameraPermissionsAsync()
+  const requestPermissions = async () => {
+    const galleryStatus = await ImagePicker.requestMediaLibraryPermissionsAsync();
+    setHasGalleryPermission(galleryStatus.status === 'granted');
 
-    setHasGalleryPermission(galleryStatus.status === 'granted')
-    setHasCameraPermission(cameraStatus.status === 'granted')
-  })()
-}, [])
+    const cameraStatus = await ImagePicker.getCameraPermissionsAsync();
+    setHasCameraPermission(cameraStatus.status === 'granted');
+  };
+
+  requestPermissions();
+}, []);
 
 useEffect(() => {
   const unsubscribe = onSnapshot(doc(FIREBASE_DB, 'Users', User.email), (doc) => {
@@ -67,15 +69,17 @@ useEffect(() => {
 }, [User]);
 
 // Permissions
-if(hasGalleryPermission === false){
-  ImagePicker.requestMediaLibraryPermissionsAsync()
-  
-  setHasGalleryPermission(galleryStatus.status === 'granted')
+if (hasGalleryPermission === false) {
+  (async () => {
+    const galleryStatus = await ImagePicker.requestMediaLibraryPermissionsAsync();
+    setHasGalleryPermission(galleryStatus.status === 'granted');
+  })();
 }
-if(hasCameraPermission === false){
-  ImagePicker.getCameraPermissionsAsync()
-  
-  setHasCameraPermission(cameraStatus.status === 'granted')
+if (hasCameraPermission === false) {
+  (async () => {
+    const cameraStatus = await ImagePicker.getCameraPermissionsAsync();
+    setHasCameraPermission(cameraStatus.status === 'granted');
+  })();
 }
 
 // Upload Image to firestore
@@ -306,7 +310,7 @@ console.error(error)
             <Text style={Styles.panelTitle}>Upload Photo</Text>
             <Text style={Styles.panelSubtitle}>Choose Your Profile Picture</Text>
           </View>
-          <View style={{alignItems: 'center'}}>
+          <View style={{alignItems: 'center',}}>
             <TouchableOpacity style={Styles.panelButton} onPress={takePhotoFromCamera}>
               <Text style={Styles.panelButtonTitle}>Take Photo</Text>
             </TouchableOpacity>
@@ -370,7 +374,7 @@ const Styles = StyleSheet.create({
     fontSize: 17,
     fontWeight: 'bold',
     color: 'white',
-    width: '',
+    width: '100%',
   },
   action: {
     flexDirection: 'row',
